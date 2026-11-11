@@ -243,6 +243,141 @@ def register_device(device_uuid: str):
             </div>
         </x-filament::section>
 
+        {{-- Section 2.5: Verify Owner Credentials from Unbound Machine (New Machine Diagnostic) --}}
+        <x-filament::section>
+            <x-slot name="heading">
+                <div style="display: flex; items-center; gap: 8px;">
+                    <svg style="width: 20px; height: 20px; color: #f59e0b; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                    <span>Check Owner Credentials (New / Unbound Machine)</span>
+                </div>
+            </x-slot>
+            <x-slot name="description">
+                Endpoint: <code>POST /api/v1/pharmacy/verify-credentials</code> (alias: <code>POST /api/v1/owner/verify-credentials</code>).
+                Enables a new workstation to verify owner credentials, inspect pharmacy & license status, and evaluate device lock without exposing cryptographic secrets or requiring prior HMAC signatures.
+            </x-slot>
+
+            <div x-data="{ checkTab: 'js' }" style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 8px; flex-wrap: wrap;">
+                    <button
+                        type="button"
+                        @click="checkTab = 'js'"
+                        :style="checkTab === 'js' ? 'background: #f59e0b; color: #ffffff;' : 'background: rgba(128,128,128,0.1); color: inherit;'"
+                        style="padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s ease;"
+                    >
+                        JavaScript / Node.js
+                    </button>
+                    <button
+                        type="button"
+                        @click="checkTab = 'dart'"
+                        :style="checkTab === 'dart' ? 'background: #f59e0b; color: #ffffff;' : 'background: rgba(128,128,128,0.1); color: inherit;'"
+                        style="padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s ease;"
+                    >
+                        Dart / Flutter
+                    </button>
+                    <button
+                        type="button"
+                        @click="checkTab = 'csharp'"
+                        :style="checkTab === 'csharp' ? 'background: #f59e0b; color: #ffffff;' : 'background: rgba(128,128,128,0.1); color: inherit;'"
+                        style="padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s ease;"
+                    >
+                        C# (.NET / WPF)
+                    </button>
+                    <button
+                        type="button"
+                        @click="checkTab = 'python'"
+                        :style="checkTab === 'python' ? 'background: #f59e0b; color: #ffffff;' : 'background: rgba(128,128,128,0.1); color: inherit;'"
+                        style="padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s ease;"
+                    >
+                        Python (Requests)
+                    </button>
+                </div>
+
+                <div x-show="checkTab === 'js'">
+                    <pre style="background: #090d16; color: #e2e8f0; padding: 16px; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.5; overflow-x: auto; margin: 0; border: 1px solid rgba(255,255,255,0.08);"><code>const axios = require('axios');
+
+async function checkOwnerOnNewMachine(identifier, password, newDeviceUuid) {
+  const payload = {
+    identifier: identifier, // trade_license, owner_email, owner_phone, or license_key
+    password: password,
+    device_uuid: newDeviceUuid // optional: to check lock state for this machine
+  };
+
+  const response = await axios.post('{{ url('/api/v1/pharmacy/verify-credentials') }}', payload);
+  const { pharmacy, owner, license_summary, hardware_lock } = response.data.data;
+
+  console.log('Pharmacy:', pharmacy.pharmacy_name);
+  console.log('Owner:', owner.name, owner.email);
+  console.log('Is Locked to Another Device:', hardware_lock.is_locked_to_device);
+  console.log('Lock Notice:', hardware_lock.notice);
+  
+  // Note: secrets (client_secret, hashes) are strictly excluded from response.
+  return response.data;
+}</code></pre>
+                </div>
+
+                <div x-show="checkTab === 'dart'" style="display: none;">
+                    <pre style="background: #090d16; color: #e2e8f0; padding: 16px; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.5; overflow-x: auto; margin: 0; border: 1px solid rgba(255,255,255,0.08);"><code>import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future&lt;Map&lt;String, dynamic&gt;&gt; verifyOwnerFromNewMachine({
+  required String identifier,
+  required String password,
+  String? deviceUuid,
+}) async {
+  final res = await http.post(
+    Uri.parse('{{ url('/api/v1/pharmacy/verify-credentials') }}'),
+    headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+    body: jsonEncode({
+      'identifier': identifier,
+      'password': password,
+      if (deviceUuid != null) 'device_uuid': deviceUuid,
+    }),
+  );
+
+  return jsonDecode(res.body);
+}</code></pre>
+                </div>
+
+                <div x-show="checkTab === 'csharp'" style="display: none;">
+                    <pre style="background: #090d16; color: #e2e8f0; padding: 16px; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.5; overflow-x: auto; margin: 0; border: 1px solid rgba(255,255,255,0.08);"><code>using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+public class OwnerCredentialCheck {
+    public static async Task&lt;string&gt; VerifyOwnerAsync(string identifier, string password, string deviceUuid) {
+        using var client = new HttpClient();
+        var payloadObj = new {
+            identifier = identifier,
+            password = password,
+            device_uuid = deviceUuid
+        };
+        var content = new StringContent(JsonSerializer.Serialize(payloadObj), Encoding.UTF8, "application/json");
+        var response = await client.PostAsync("{{ url('/api/v1/pharmacy/verify-credentials') }}", content);
+        return await response.Content.ReadAsStringAsync();
+    }
+}</code></pre>
+                </div>
+
+                <div x-show="checkTab === 'python'" style="display: none;">
+                    <pre style="background: #090d16; color: #e2e8f0; padding: 16px; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.5; overflow-x: auto; margin: 0; border: 1px solid rgba(255,255,255,0.08);"><code>import requests
+
+def check_owner_credentials(identifier: str, password: str, device_uuid: str = None):
+    payload = {
+        "identifier": identifier,
+        "password": password,
+    }
+    if device_uuid:
+        payload["device_uuid"] = device_uuid
+
+    response = requests.post("{{ url('/api/v1/pharmacy/verify-credentials') }}", json=payload)
+    return response.json()</code></pre>
+                </div>
+            </div>
+        </x-filament::section>
+
         {{-- Section 3: Client Signin, HMAC & Validation Reference in 4 Languages --}}
         <x-filament::section>
             <x-slot name="heading">

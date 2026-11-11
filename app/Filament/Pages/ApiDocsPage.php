@@ -218,6 +218,97 @@ class ApiDocsPage extends Page
                         ],
                     ],
                 ],
+                '/pharmacy/verify-credentials' => [
+                    'post' => [
+                        'summary' => 'Verify Owner Credentials from Unbound Machine (New Machine)',
+                        'description' => "Enables an owner on a new or unbound device to authenticate and retrieve complete pharmacy and owner profiles without requiring HMAC signatures or prior hardware binding.\n\n### Security Guarantees:\n- **No secrets exposed**: `client_secret` and cryptographic keys are strictly excluded.\n- **Diagnostics returned**: Informs the application if the license is locked to another machine or ready to bind.",
+                        'requestBody' => [
+                            'required' => true,
+                            'content' => [
+                                'application/json' => [
+                                    'schema' => [
+                                        'type' => 'object',
+                                        'required' => ['password'],
+                                        'properties' => [
+                                            'identifier' => [
+                                                'type' => 'string',
+                                                'description' => 'Trade license number, owner email, owner phone, or license key',
+                                                'example' => 'TL-2026-88491-DHK',
+                                            ],
+                                            'password' => [
+                                                'type' => 'string',
+                                                'format' => 'password',
+                                                'description' => 'Owner account password created during registration',
+                                                'example' => 'Secret123!',
+                                            ],
+                                            'device_uuid' => [
+                                                'type' => 'string',
+                                                'description' => 'Hardware UUID of the new/unbound machine (optional for diagnostic lock evaluation)',
+                                                'example' => 'hw_new_terminal_9901',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Owner verified successfully. Returns profile and license summary without secrets.',
+                                'content' => [
+                                    'application/json' => [
+                                        'example' => [
+                                            'status' => 'success',
+                                            'message' => 'Owner credentials verified successfully.',
+                                            'data' => [
+                                                'pharmacy' => [
+                                                    'id' => '9bf3c8e4-7d52-4a57-8be7-59b1dc0a1099',
+                                                    'pharmacy_name' => 'Apex Care Pharmacy',
+                                                    'trade_license_number' => 'TL-2026-88491-DHK',
+                                                    'pharmacy_phone' => '+8801711002233',
+                                                    'pharmacy_address' => 'Plot 42, Block C, Gulshan Avenue, Dhaka 1212',
+                                                    'map_location_url' => 'https://maps.google.com/?q=23.7925,90.4078',
+                                                    'verification_status' => 'approved',
+                                                    'is_approved' => true,
+                                                    'registered_at' => '2026-10-28T09:00:00Z',
+                                                ],
+                                                'owner' => [
+                                                    'name' => 'Dr. Farhana Ahmed',
+                                                    'email' => 'farhana.ahmed@apexpharmacy.com',
+                                                    'phone' => '+8801819001122',
+                                                    'address' => 'House 15, Road 27, Banani, Dhaka',
+                                                ],
+                                                'license_summary' => [
+                                                    'has_license' => true,
+                                                    'license_key' => 'PHARMA-8F92-BC10-44A1',
+                                                    'status' => 'ACTIVE',
+                                                    'session_days_remaining' => 28,
+                                                    'valid_until' => '2026-11-25T21:33:50Z',
+                                                ],
+                                                'hardware_lock' => [
+                                                    'is_locked_to_device' => true,
+                                                    'bound_device_name' => 'Counter-PC-01',
+                                                    'calling_device_uuid' => 'hw_new_terminal_9901',
+                                                    'is_calling_device_bound' => false,
+                                                    'binding_required' => true,
+                                                    'notice' => 'This license is locked to another machine (Counter-PC-01). To activate this new machine, reset the device lock in Filament Admin or contact administrator.',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            '401' => [
+                                'description' => 'Invalid owner credentials (incorrect password or unrecognized identifier)',
+                            ],
+                            '403' => [
+                                'description' => 'Pharmacy suspended by administration',
+                            ],
+                            '422' => [
+                                'description' => 'Missing required fields',
+                            ],
+                        ],
+                    ],
+                ],
                 '/license/validate' => [
                     'post' => [
                         'summary' => 'Validate License & Bind Hardware Device',

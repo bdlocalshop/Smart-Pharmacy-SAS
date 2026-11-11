@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Enums\ItemType;
 use App\Enums\PlatformType;
 use App\Enums\VerificationStatus;
+use App\Mail\PharmacyLicenseCredentialsMail;
 use App\Models\CatalogItem;
 use App\Models\Pharmacy;
 use App\Models\PharmacyBackup;
@@ -15,7 +16,9 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class FilamentAdminPanelTest extends TestCase
@@ -186,5 +189,95 @@ class FilamentAdminPanelTest extends TestCase
             ->get("/admin/pharmacies/{$pharmacy->id}")
             ->assertSuccessful()
             ->assertSee('Healing Hands Pharmacy');
+    }
+
+    public function test_license_credentials_mail_renders_properly(): void
+    {
+        $pharmacy = Pharmacy::create([
+            'pharmacy_name' => 'Email Render Test Pharmacy',
+            'trade_license_number' => 'TL-EMAIL-001',
+            'pharmacy_address' => '123 Test St',
+            'pharmacy_phone' => '+8801700112233',
+            'owner_name' => 'Dr. Email Tester',
+            'owner_phone' => '+8801800112233',
+            'owner_email' => 'tester@example.com',
+            'password' => 'SecurePass123!',
+            'verification_status' => VerificationStatus::APPROVED,
+        ]);
+
+        $license = PharmacyLicense::create([
+            'pharmacy_id' => $pharmacy->id,
+            'license_key' => 'PHARMA-TEST-EMAIL-01',
+            'client_secret_hash' => Crypt::encryptString('plain_test_secret_123'),
+            'session_days_limit' => 30,
+            'valid_from' => Carbon::now(),
+            'valid_until' => Carbon::now()->addDays(30),
+            'is_revoked' => false,
+        ]);
+
+        $mailable = new PharmacyLicenseCredentialsMail($pharmacy, $license, 'plain_test_secret_123', false);
+        $mailable->assertSeeInHtml('PHARMA-TEST-EMAIL-01');
+        $mailable->assertSeeInHtml('plain_test_secret_123');
+        $mailable->assertSeeInHtml('Email Render Test Pharmacy');
+        $mailable->assertSeeInHtml('TL-EMAIL-001');
+    }
+
+    public function test_license_credentials_can_be_recreated_and_collected(): void
+    {
+        Mail::fake();
+
+        $pharmacy = Pharmacy::create([
+            'pharmacy_name' => 'Recreation Pharmacy',
+            'trade_license_number' => 'TL-RECREATE-001',
+            'pharmacy_address' => '456 Recreate Way',
+            'pharmacy_phone' => '+8801700112233',
+            'owner_name' => 'Dr. Recreator',
+            'owner_phone' => '+8801800112233',
+            'owner_email' => 'recreator@example.com',
+            'password' => 'SecurePass123!',
+            'verification_status' => VerificationStatus::APPROVED,
+        ]);
+
+        $license = PharmacyLicense::create([
+            'pharmacy_id' => $pharmacy->id,
+            'license_key' => 'PHARMA-OLD-KEY-001',
+            'client_secret_hash' => Crypt::encryptString('old_secret_123'),
+            'session_days_limit' => 30,
+            'valid_from' => Carbon::now(),
+            'valid_until' => Carbon::now()->addDays(30),
+            'bound_device_uuid' => 'hw_old_machine_to_unbind',
+            'is_revoked' => false,
+        ]);
+
+        // 1. Verify admin can collect existing plain secret
+        $this->assertEquals('old_secret_123', $license->getPlainSecret());
+
+        // 2. Simulate recreate credentials action
+        $newKey = 'PHARMA-NEW-KEY-999';
+        $newSecret = 'brand_new_secret_456';
+
+        $license->update([
+            'license_key' => $newKey,
+            'client_secret_hash' => Crypt::encryptString($newSecret),
+            'bound_device_uuid' => null,
+        ]);
+
+        Mail::to($pharmacy->owner_email)->send(
+            new PharmacyLicenseCredentialsMail($pharmacy, $license, $newSecret, true)
+        );
+
+        // Assert new credentials can be collected
+        $license->refresh();
+        $this->assertEquals($newKey, $license->license_key);
+        $this->assertEquals($newSecret, $license->getPlainSecret());
+        $this->assertNull($license->bound_device_uuid);
+
+        // Assert email dispatched
+        Mail::assertSent(PharmacyLicenseCredentialsMail::class, function ($mail) use ($pharmacy, $newKey, $newSecret) {
+            return $mail->hasTo($pharmacy->owner_email) &&
+                $mail->license->license_key === $newKey &&
+                $mail->plainSecret === $newSecret &&
+                $mail->isRegenerated === true;
+        });
     }
 }

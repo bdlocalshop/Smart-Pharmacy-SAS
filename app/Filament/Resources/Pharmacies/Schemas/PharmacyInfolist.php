@@ -57,6 +57,11 @@ class PharmacyInfolist
                                 ->placeholder('No license issued')
                                 ->copyable()
                                 ->weight('bold'),
+                            TextEntry::make('activeLicense_secret')
+                                ->label('HMAC Client Secret')
+                                ->state(fn (Pharmacy $record) => $record->activeLicense?->getPlainSecret() ?: 'No license issued')
+                                ->copyable()
+                                ->placeholder('No license issued'),
                             TextEntry::make('activeLicense.status')
                                 ->label('License State')
                                 ->badge()
@@ -66,12 +71,12 @@ class PharmacyInfolist
                                 ->label('Session Days Remaining')
                                 ->suffix(' days')
                                 ->placeholder('0'),
+                        ]),
+                        Grid::make(4)->schema([
                             TextEntry::make('activeLicense.valid_until')
                                 ->label('Valid Until')
                                 ->dateTime()
                                 ->placeholder('N/A'),
-                        ]),
-                        Grid::make(3)->schema([
                             TextEntry::make('activeLicense.bound_device_uuid')
                                 ->label('Bound Hardware UUID')
                                 ->placeholder('Unbound (Waiting for first device activation)')
