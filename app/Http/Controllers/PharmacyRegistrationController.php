@@ -34,6 +34,7 @@ class PharmacyRegistrationController extends Controller
             'pharmacy_address' => ['required', 'string'],
             'pharmacy_phone' => ['required', 'string', 'max:50', 'regex:/^(\+?[0-9]{1,4}[\s-]?)?(\(?[0-9]{2,5}\)?[\s-]?)?[0-9]{4,14}$/'],
             'map_location_url' => ['nullable', 'url', 'max:500'],
+            'opening_hours' => ['nullable', 'string', 'max:500'],
 
             // Owner contact credentials
             'owner_name' => ['required', 'string', 'max:255'],
@@ -56,6 +57,7 @@ class PharmacyRegistrationController extends Controller
             'pharmacy_address' => $validated['pharmacy_address'],
             'pharmacy_phone' => $validated['pharmacy_phone'],
             'map_location_url' => $validated['map_location_url'] ?? null,
+            'opening_hours' => $validated['opening_hours'] ?? null,
             'owner_name' => $validated['owner_name'],
             'owner_address' => $validated['owner_address'] ?? null,
             'owner_phone' => $validated['owner_phone'],

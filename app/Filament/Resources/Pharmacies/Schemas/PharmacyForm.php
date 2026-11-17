@@ -34,6 +34,12 @@ class PharmacyForm
                             ->tel()
                             ->required()
                             ->maxLength(50),
+                        TextInput::make('opening_hours')
+                            ->label('Opening Hours')
+                            ->placeholder('e.g. 8:00AM-1:00PM, 2:00PM-5:00PM, 6:00PM-11:30PM')
+                            ->helperText('Enter time slots separated by commas.')
+                            ->maxLength(500)
+                            ->nullable(),
                         TextInput::make('map_location_url')
                             ->label('Map Pin URL')
                             ->url()

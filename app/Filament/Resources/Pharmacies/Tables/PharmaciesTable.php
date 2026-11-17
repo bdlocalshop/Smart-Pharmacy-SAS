@@ -80,6 +80,12 @@ class PharmaciesTable
                     ->color('primary')
                     ->toggleable(),
 
+                TextColumn::make('opening_hours')
+                    ->label('Opening Hours')
+                    ->placeholder('Not set')
+                    ->limit(25)
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('created_at')
                     ->label('Registered At')
                     ->dateTime()

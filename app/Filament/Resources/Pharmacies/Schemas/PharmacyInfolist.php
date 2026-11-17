@@ -25,8 +25,12 @@ class PharmacyInfolist
                                 ->badge()
                                 ->color(fn ($state) => $state?->color() ?? 'gray'),
                         ]),
-                        Grid::make(2)->schema([
+                        Grid::make(3)->schema([
                             TextEntry::make('pharmacy_phone')->icon('heroicon-m-phone'),
+                            TextEntry::make('opening_hours')
+                                ->label('Opening Hours')
+                                ->placeholder('Not specified')
+                                ->icon('heroicon-m-clock'),
                             TextEntry::make('map_location_url')
                                 ->label('Map Location Pin')
                                 ->placeholder('Not provided')

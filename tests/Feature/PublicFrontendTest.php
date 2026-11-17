@@ -190,6 +190,7 @@ class PublicFrontendTest extends TestCase
             'pharmacy_address' => 'Plot 9, Road 11, Banani, Dhaka 1213',
             'pharmacy_phone' => '+8801700112233',
             'map_location_url' => 'https://maps.google.com/?q=23.7937,90.4066',
+            'opening_hours' => '8:00AM-1:00PM, 2:00PM-5:00PM, 6:00PM-11:30PM',
             'owner_name' => 'Dr. Rahman',
             'owner_address' => 'Banani, Dhaka',
             'owner_phone' => '+8801800112233',
@@ -216,7 +217,11 @@ class PublicFrontendTest extends TestCase
             ->assertSee('+8801700112233')
             ->assertSee('https://maps.google.com/?q=23.7937,90.4066')
             ->assertSee('target="_blank"', false)
-            ->assertSee('Active');
+            ->assertSee('Active')
+            ->assertSee('Opening Hours')
+            ->assertSee('8:00AM-1:00PM')
+            ->assertSee('2:00PM-5:00PM')
+            ->assertSee('6:00PM-11:30PM');
     }
 
     public function test_pharmacy_directory_search_and_location_filtering(): void
@@ -341,5 +346,16 @@ class PublicFrontendTest extends TestCase
         $response->assertStatus(200)
             ->assertDontSee('Pending Pharmacy Corp')
             ->assertDontSee('Expired License Pharmacy');
+    }
+
+    public function test_pharmacy_directory_defaults_to_half_km_and_contains_pagination(): void
+    {
+        $response = $this->get('/pharmacies');
+
+        $response->assertStatus(200)
+            ->assertSee('0.5 km (Default)')
+            ->assertSee('10 per page')
+            ->assertSee('min="0.25"', false)
+            ->assertSee('max="10"', false);
     }
 }

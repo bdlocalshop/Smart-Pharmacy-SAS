@@ -23,9 +23,9 @@ class PharmacyDirectoryController extends Controller
         $searchRaw = trim((string) $request->input('search', ''));
         $searchCoords = Pharmacy::extractCoordinates($searchRaw);
         $selectedLocation = strtolower(trim((string) $request->input('location', 'all')));
-        $distanceKm = (float) $request->input('distance', 25.0);
-        if ($distanceKm <= 0) {
-            $distanceKm = 25.0;
+        $distanceKm = (float) $request->input('distance', 0.5);
+        if ($distanceKm < 0.25) {
+            $distanceKm = 0.5;
         }
 
         $filteredPharmacies = $allActive;
@@ -99,6 +99,8 @@ class PharmacyDirectoryController extends Controller
                 'map_url' => $p->map_location_url ?: 'https://www.google.com/maps/search/?api=1&query=' . urlencode($p->pharmacy_name . ' ' . $p->pharmacy_address),
                 'lat' => $p->latitude,
                 'lng' => $p->longitude,
+                'opening_hours' => $p->opening_hours,
+                'opening_hours_slots' => $p->opening_hours_slots,
             ];
         })->values()->all();
 

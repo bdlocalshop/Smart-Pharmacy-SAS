@@ -49,6 +49,7 @@ class Pharmacy extends Model
         'pharmacy_address',
         'pharmacy_phone',
         'map_location_url',
+        'opening_hours',
         'owner_name',
         'owner_address',
         'owner_phone',
@@ -135,6 +136,20 @@ class Pharmacy extends Model
                 $q->where('is_revoked', false)
                     ->where('valid_until', '>=', now());
             });
+    }
+
+    /**
+     * Get parsed opening hours slots as an array.
+     *
+     * @return list<string>
+     */
+    public function getOpeningHoursSlotsAttribute(): array
+    {
+        if (empty($this->opening_hours)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map('trim', explode(',', $this->opening_hours))));
     }
 
     /**
