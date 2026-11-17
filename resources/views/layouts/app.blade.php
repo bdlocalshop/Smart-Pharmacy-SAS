@@ -49,9 +49,9 @@
     <header x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                {{-- Brand Logo --}}
+                {{-- Brand Logo (Serves as Home Link) --}}
                 <div class="flex items-center gap-3">
-                    <a href="{{ url('/') }}" class="flex items-center gap-2.5 group">
+                    <a href="{{ url('/') }}" class="flex items-center gap-2.5 group" title="Smart Pharmacy Home">
                         <img src="{{ asset('images/logo.png') }}" alt="Smart Pharmacy Logo" class="h-10 w-auto object-contain max-h-10 group-hover:scale-105 transition-transform" />
                         <span class="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-1.5">
                             Smart <span class="text-brand-600">Pharmacy</span>
@@ -61,13 +61,12 @@
 
                 {{-- Desktop Navigation Links --}}
                 <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-                    <a href="{{ url('/') }}" class="hover:text-brand-600 transition">Home</a>
-                    <a href="{{ url('/#products') }}" class="hover:text-brand-600 transition">Products & Workstations</a>
-                    <a href="{{ url('/#services') }}" class="hover:text-brand-600 transition">Cloud Services</a>
-                    <a href="{{ route('pharmacy.directory') }}" class="hover:text-brand-600 transition flex items-center gap-1">
+                    <a href="{{ route('pharmacy.directory') }}" class="hover:text-brand-600 transition flex items-center gap-1 font-semibold text-brand-600">
                         <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                         Active Pharmacies
                     </a>
+                    <a href="{{ url('/products#products') }}" class="hover:text-brand-600 transition">Products & Workstations</a>
+                    <a href="{{ url('/products#services') }}" class="hover:text-brand-600 transition">Cloud Services</a>
                     <a href="{{ route('pharmacy.status') }}" class="hover:text-brand-600 transition flex items-center gap-1">
                         <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
                         Track Status
@@ -100,10 +99,9 @@
 
         {{-- Mobile Menu Dropdown --}}
         <div x-show="mobileMenuOpen" x-cloak class="md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-4 space-y-2">
-            <a href="{{ url('/') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">Home</a>
-            <a href="{{ url('/#products') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">Products & Workstations</a>
-            <a href="{{ url('/#services') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">Cloud Services</a>
-            <a href="{{ route('pharmacy.directory') }}" class="block px-3 py-2 rounded-md text-base font-medium text-emerald-700 hover:bg-emerald-50">Active Subscriber Pharmacies</a>
+            <a href="{{ route('pharmacy.directory') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-brand-600 hover:bg-brand-50">Active Subscriber Pharmacies</a>
+            <a href="{{ url('/products#products') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">Products & Workstations</a>
+            <a href="{{ url('/products#services') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">Cloud Services</a>
             <a href="{{ route('pharmacy.status') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">Track Registration Status</a>
             <div class="pt-2 border-t border-slate-100 flex flex-col gap-2">
                 <a href="{{ route('pharmacy.register') }}" class="w-full text-center py-2.5 rounded-lg bg-brand-600 text-white font-medium text-sm">Register Pharmacy</a>
@@ -133,10 +131,10 @@
                 <div>
                     <h4 class="text-white text-xs font-semibold uppercase tracking-wider mb-3">Platform Solutions</h4>
                     <ul class="space-y-2 text-xs">
-                        <li><a href="{{ url('/#products') }}" class="hover:text-white transition">Desktop POS Workstation</a></li>
-                        <li><a href="{{ url('/#products') }}" class="hover:text-white transition">Mobile Dispense Assistant</a></li>
-                        <li><a href="{{ url('/#services') }}" class="hover:text-white transition">Cloud Nightly Snapshots</a></li>
-                        <li><a href="{{ url('/#services') }}" class="hover:text-white transition">Drug Interaction Feed</a></li>
+                        <li><a href="{{ url('/products#products') }}" class="hover:text-white transition">Desktop POS Workstation</a></li>
+                        <li><a href="{{ url('/products#products') }}" class="hover:text-white transition">Mobile Dispense Assistant</a></li>
+                        <li><a href="{{ url('/products#services') }}" class="hover:text-white transition">Cloud Nightly Snapshots</a></li>
+                        <li><a href="{{ url('/products#services') }}" class="hover:text-white transition">Drug Interaction Feed</a></li>
                     </ul>
                 </div>
                 <div>

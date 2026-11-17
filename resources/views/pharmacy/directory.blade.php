@@ -11,41 +11,153 @@
                     Active Subscriber Pharmacies
                 </h1>
                 <p class="mt-3 text-slate-300 text-sm sm:text-base leading-relaxed">
-                    Browse licensed pharmacies actively operating with Smart Pharmacy offline POS workstations and secured cloud sync. Search by pharmacy name or filter by location to locate a partner branch near you.
+                    Search and locate licensed pharmacies by name, address, phone, or paste a Google Maps link / coordinates to find the nearest partner branch within your chosen distance.
                 </p>
             </div>
         </div>
     </div>
 
-    {{-- Main Directory Container with Alpine.js Reactive Filtering --}}
+    {{-- Main Directory Container with Reactive Alpine.js Proximity & Text Filtering --}}
     <div 
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
         x-data="{
+            allPharmacies: {{ Js::from($pharmaciesJson) }},
             searchQuery: '{{ addslashes($initialSearch) }}',
             selectedLocation: '{{ addslashes($initialLocation) }}',
-            matches(name, address, phone, location) {
-                const query = this.searchQuery.toLowerCase().trim();
-                const loc = this.selectedLocation.toLowerCase().trim();
+            distanceKm: {{ $initialDistance ?? 25 }},
+            locating: false,
 
-                const matchesSearch = !query || 
-                    name.includes(query) || 
-                    address.includes(query) || 
-                    phone.includes(query);
-
-                const matchesLocation = !loc || loc === 'all' || 
-                    address.includes(loc) || 
-                    location === loc;
-
-                return matchesSearch && matchesLocation;
+            // Extract lat & lng from Google Maps link or raw coordinates string
+            extractCoords(text) {
+                if (!text || typeof text !== 'string') return null;
+                const str = text.trim();
+                const match = str.match(/(?:[?&](?:q|query|ll|loc)=|@)?(-?\d{1,2}(?:\.\d+)?)[,\s]+(-?\d{1,3}(?:\.\d+)?)/i);
+                if (!match) return null;
+                const lat = parseFloat(match[1]);
+                const lng = parseFloat(match[2]);
+                if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                    return { lat, lng };
+                }
+                return null;
             },
+
+            // Calculate Haversine Great Circle distance in km
+            haversineKm(lat1, lon1, lat2, lon2) {
+                const R = 6371;
+                const toRad = (x) => (x * Math.PI) / 180;
+                const dLat = toRad(lat2 - lat1);
+                const dLon = toRad(lon2 - lon1);
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return Math.round(R * c * 10) / 10;
+            },
+
+            get searchCoords() {
+                return this.extractCoords(this.searchQuery);
+            },
+
+            get isProximityMode() {
+                return this.searchCoords !== null;
+            },
+
+            // Computed pharmacies with calculated distances and sorting
+            get computedPharmacies() {
+                const coords = this.searchCoords;
+                const loc = this.selectedLocation.toLowerCase().trim();
+                const query = this.searchQuery.toLowerCase().trim();
+
+                // Calculate distance for all pharmacies if coordinates are present
+                let list = this.allPharmacies.map(p => {
+                    let d = null;
+                    if (coords && p.lat !== null && p.lng !== null) {
+                        d = this.haversineKm(coords.lat, coords.lng, p.lat, p.lng);
+                    }
+                    return { ...p, distance: d };
+                });
+
+                // Filter by location dropdown if selected
+                if (loc && loc !== 'all') {
+                    list = list.filter(p => 
+                        (p.address && p.address.toLowerCase().includes(loc)) ||
+                        (p.location && p.location.toLowerCase() === loc)
+                    );
+                }
+
+                if (coords) {
+                    // Sort closest to farthest
+                    list.sort((a, b) => {
+                        const distA = a.distance !== null ? a.distance : 999999;
+                        const distB = b.distance !== null ? b.distance : 999999;
+                        return distA - distB;
+                    });
+                } else if (query) {
+                    // Standard text search: name, address, phone, map link
+                    list = list.filter(p => 
+                        (p.name && p.name.toLowerCase().includes(query)) ||
+                        (p.address && p.address.toLowerCase().includes(query)) ||
+                        (p.phone && p.phone.toLowerCase().includes(query)) ||
+                        (p.map_url && p.map_url.toLowerCase().includes(query))
+                    );
+                }
+
+                return list;
+            },
+
+            // Pharmacies strictly within the selected distance range (or matching text query)
+            get inRangePharmacies() {
+                if (this.isProximityMode) {
+                    return this.computedPharmacies.filter(p => p.distance !== null && p.distance <= this.distanceKm);
+                }
+                return this.computedPharmacies;
+            },
+
+            // Closest fallback pharmacies when none match within the selected range
+            get closestFallbackPharmacies() {
+                if (this.isProximityMode && this.inRangePharmacies.length === 0) {
+                    return this.computedPharmacies.filter(p => p.distance !== null).slice(0, 3);
+                }
+                return [];
+            },
+
+            get hasNoRangeMatches() {
+                return this.isProximityMode && this.inRangePharmacies.length === 0 && this.computedPharmacies.length > 0;
+            },
+
+            // GPS auto-locate handler
+            useMyLocation() {
+                if (!navigator.geolocation) {
+                    alert('Geolocation is not supported by your browser.');
+                    return;
+                }
+                this.locating = true;
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude.toFixed(4);
+                        const lng = pos.coords.longitude.toFixed(4);
+                        this.searchQuery = `${lat}, ${lng}`;
+                        this.locating = false;
+                    },
+                    (err) => {
+                        this.locating = false;
+                        alert('Could not retrieve your location. Please check browser location permissions or paste your Google Maps link.');
+                    },
+                    { enableHighAccuracy: true, timeout: 8000 }
+                );
+            },
+
             resetFilters() {
                 this.searchQuery = '';
                 this.selectedLocation = 'all';
+                this.distanceKm = 25;
             }
         }"
     >
-        {{-- Search & Location Filter Bar --}}
-        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm mb-8">
+        {{-- Search & Proximity Filter Card --}}
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm mb-8 space-y-5">
+            {{-- Top Row: Search Input + Location Dropdown --}}
             <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
                 {{-- Search Input Field --}}
                 <div class="relative flex-1">
@@ -57,18 +169,36 @@
                     <input 
                         type="text" 
                         x-model="searchQuery" 
-                        placeholder="Search by pharmacy name, address, or phone number..."
-                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 bg-slate-50/50 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition"
+                        placeholder="Search by pharmacy name, address, phone, Google Maps link, or coordinates..."
+                        class="w-full pl-10 pr-24 py-2.5 rounded-xl border border-slate-300 bg-slate-50/50 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition"
                     />
-                    <template x-if="searchQuery">
+
+                    {{-- Right Actions inside Search Bar: Clear & GPS --}}
+                    <div class="absolute inset-y-0 right-0 pr-2 flex items-center gap-1">
+                        <template x-if="searchQuery">
+                            <button 
+                                type="button" 
+                                @click="searchQuery = ''" 
+                                class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+                                title="Clear search"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </template>
+
                         <button 
                             type="button" 
-                            @click="searchQuery = ''" 
-                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                            @click="useMyLocation()" 
+                            class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-700 transition flex items-center gap-1 border border-slate-200"
+                            :title="locating ? 'Detecting your GPS position...' : 'Use My Current Location'"
                         >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            <svg class="w-3.5 h-3.5 text-brand-600" :class="{ 'animate-spin': locating }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span class="hidden sm:inline" x-text="locating ? 'Locating...' : 'GPS'"></span>
                         </button>
-                    </template>
+                    </div>
                 </div>
 
                 {{-- Location Filter Dropdown --}}
@@ -95,7 +225,7 @@
                     </div>
 
                     {{-- Reset Button --}}
-                    <template x-if="searchQuery || selectedLocation !== 'all'">
+                    <template x-if="searchQuery || selectedLocation !== 'all' || distanceKm !== 25">
                         <button 
                             type="button" 
                             @click="resetFilters()" 
@@ -107,10 +237,70 @@
                 </div>
             </div>
 
+            {{-- Dedicated Distance Selector (Horizontal Range Slider) Under the Location Dropdown --}}
+            <div 
+                class="pt-4 border-t border-slate-100 rounded-xl p-4 transition-colors duration-200"
+                :class="isProximityMode ? 'bg-brand-50/50 border border-brand-200/80 shadow-xs' : 'bg-slate-50/60'"
+            >
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                        <label class="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                            Distance Selector (Proximity Radius)
+                        </label>
+                        <span 
+                            class="text-xs font-extrabold font-mono px-2.5 py-0.5 rounded-md bg-white border border-slate-200 text-brand-600 shadow-2xs"
+                            x-text="distanceKm + ' km'"
+                        >
+                            25 km
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <template x-if="isProximityMode">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Proximity Mode Active: Closest First
+                            </span>
+                        </template>
+                        <template x-if="!isProximityMode">
+                            <span class="text-[11px] text-slate-500 italic">
+                                Paste a Google Maps link or lat,lng to activate live closest-distance sorting
+                            </span>
+                        </template>
+                    </div>
+                </div>
+
+                {{-- The Horizontal Scrollbar / Range Slider --}}
+                <div class="space-y-1.5">
+                    <input 
+                        type="range" 
+                        min="1" 
+                        max="100" 
+                        step="1" 
+                        x-model.number="distanceKm"
+                        class="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600 focus:outline-none transition"
+                        title="Adjust proximity distance in kilometers"
+                    />
+                    <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                        <span>1 km</span>
+                        <div class="flex items-center gap-3">
+                            <button type="button" @click="distanceKm = 5" :class="distanceKm === 5 ? 'text-brand-600 font-bold underline' : 'hover:text-slate-600'">5 km</button>
+                            <button type="button" @click="distanceKm = 10" :class="distanceKm === 10 ? 'text-brand-600 font-bold underline' : 'hover:text-slate-600'">10 km</button>
+                            <button type="button" @click="distanceKm = 25" :class="distanceKm === 25 ? 'text-brand-600 font-bold underline' : 'hover:text-slate-600'">25 km (Default)</button>
+                            <button type="button" @click="distanceKm = 50" :class="distanceKm === 50 ? 'text-brand-600 font-bold underline' : 'hover:text-slate-600'">50 km</button>
+                        </div>
+                        <span>100 km</span>
+                    </div>
+                </div>
+            </div>
+
             {{-- Location Pill Shortcuts --}}
             @if(count($locations) > 0)
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 flex-wrap">
-                    <span class="text-xs font-medium text-slate-400 mr-1">Quick Filter:</span>
+                <div class="pt-3 border-t border-slate-100 flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-medium text-slate-400 mr-1">Quick Region:</span>
                     <button 
                         type="button" 
                         @click="selectedLocation = 'all'"
@@ -136,7 +326,10 @@
         {{-- Live Results Header --}}
         <div class="flex items-center justify-between mb-6">
             <div class="text-xs text-slate-500 font-medium">
-                Active certified subscriber pharmacies in network: <span class="font-bold text-slate-800">{{ $totalCount }}</span>
+                Active certified subscriber pharmacies in network: <span class="font-bold text-slate-800" x-text="inRangePharmacies.length"></span>
+                <template x-if="isProximityMode">
+                    <span class="ml-2 text-emerald-600 font-semibold">(Sorted by closest distance first)</span>
+                </template>
             </div>
             <div class="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -144,18 +337,47 @@
             </div>
         </div>
 
-        {{-- Pharmacy Cards Grid --}}
+        {{-- Warning Banner: When nothing is available within the selected distance range --}}
+        <template x-if="hasNoRangeMatches">
+            <div class="bg-amber-50 border border-amber-200/90 rounded-2xl p-6 mb-8 text-center shadow-xs">
+                <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-base font-bold text-amber-900">
+                    Nothing is available within the selected area (<span x-text="distanceKm + ' km'"></span>)
+                </h3>
+                <p class="text-xs text-amber-700 mt-1.5 max-w-lg mx-auto leading-relaxed">
+                    No registered pharmacies were found within your chosen radius. The closest pharmacies to your location outside this range are shown below:
+                </p>
+                <div class="mt-4 flex items-center justify-center gap-2">
+                    <button 
+                        type="button" 
+                        @click="distanceKm = Math.min(100, Math.ceil((closestFallbackPharmacies[0]?.distance || 30) + 5))" 
+                        class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-xs transition"
+                    >
+                        Expand radius to include closest (<span x-text="Math.min(100, Math.ceil((closestFallbackPharmacies[0]?.distance || 30) + 5)) + ' km'"></span>)
+                    </button>
+                </div>
+            </div>
+        </template>
+
+        {{-- Fallback Header when showing pharmacies outside selected radius --}}
+        <template x-if="hasNoRangeMatches && closestFallbackPharmacies.length > 0">
+            <div class="mb-4 flex items-center justify-between">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                    Closest Available Pharmacies (Outside Selected Range)
+                </h4>
+                <span class="text-xs text-slate-400">Closest nearest branches</span>
+            </div>
+        </template>
+
+        {{-- Pharmacy Cards Grid (Reactive via Alpine.js) --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($pharmacies as $pharmacy)
-                <div 
-                    x-show="matches(
-                        '{{ strtolower(addslashes($pharmacy->pharmacy_name)) }}',
-                        '{{ strtolower(addslashes($pharmacy->pharmacy_address)) }}',
-                        '{{ addslashes($pharmacy->pharmacy_phone) }}',
-                        '{{ strtolower(addslashes($pharmacy->estimated_location)) }}'
-                    )"
-                    class="bg-white rounded-2xl border border-slate-200/90 hover:border-brand-500/50 hover:shadow-lg transition-all duration-200 flex flex-col justify-between overflow-hidden group"
-                >
+            <template x-for="(pharmacy, index) in (hasNoRangeMatches ? closestFallbackPharmacies : inRangePharmacies)" :key="pharmacy.id">
+                <div class="bg-white rounded-2xl border border-slate-200/90 hover:border-brand-500/50 hover:shadow-lg transition-all duration-200 flex flex-col justify-between overflow-hidden group">
                     {{-- Card Header --}}
                     <div class="p-6">
                         <div class="flex items-start justify-between gap-3 mb-3">
@@ -166,16 +388,32 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-brand-600 transition">{{ $pharmacy->pharmacy_name }}</h3>
-                                    <span class="text-[11px] font-mono text-slate-400">Reg: {{ $pharmacy->trade_license_number }}</span>
+                                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-brand-600 transition" x-text="pharmacy.name"></h3>
+                                    <span class="text-[11px] font-mono text-slate-400" x-text="'Reg: ' + pharmacy.trade_license"></span>
                                 </div>
                             </div>
                             
-                            {{-- Active Badge --}}
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/60 shrink-0">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Active
-                            </span>
+                            {{-- Badges --}}
+                            <div class="flex flex-col items-end gap-1.5 shrink-0">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    Active
+                                </span>
+
+                                {{-- Distance Pill (Visible in Proximity Mode) --}}
+                                <template x-if="pharmacy.distance !== null">
+                                    <span 
+                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold font-mono"
+                                        :class="index === 0 && !hasNoRangeMatches ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-brand-50 text-brand-700 border border-brand-200'"
+                                    >
+                                        <svg class="w-3 h-3 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        <span x-text="pharmacy.distance.toFixed(1) + ' km'"></span>
+                                        <template x-if="index === 0 && !hasNoRangeMatches">
+                                            <span class="text-[10px] font-semibold text-emerald-700 uppercase tracking-tight ml-0.5">Closest</span>
+                                        </template>
+                                    </span>
+                                </template>
+                            </div>
                         </div>
 
                         {{-- Pharmacy Details --}}
@@ -186,7 +424,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <span class="leading-relaxed">{{ $pharmacy->pharmacy_address }}</span>
+                                <span class="leading-relaxed" x-text="pharmacy.address"></span>
                             </div>
 
                             {{-- Phone Number --}}
@@ -195,11 +433,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                 </svg>
                                 <a 
-                                    href="tel:{{ $pharmacy->pharmacy_phone }}" 
+                                    :href="'tel:' + pharmacy.phone" 
                                     class="font-semibold text-slate-700 hover:text-brand-600 hover:underline transition"
-                                >
-                                    {{ $pharmacy->pharmacy_phone }}
-                                </a>
+                                    x-text="pharmacy.phone"
+                                ></a>
                             </div>
 
                             {{-- Hardware / License Note --}}
@@ -215,7 +452,7 @@
                     {{-- Card Footer with Map Link Opening in New Tab --}}
                     <div class="p-4 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-3">
                         <a 
-                            href="tel:{{ $pharmacy->pharmacy_phone }}" 
+                            :href="'tel:' + pharmacy.phone" 
                             class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-200/60 font-semibold text-xs flex items-center gap-1.5 transition"
                         >
                             <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
@@ -223,7 +460,7 @@
                         </a>
 
                         <a 
-                            href="{{ $pharmacy->map_location_url ?: 'https://www.google.com/maps/search/?api=1&query=' . urlencode($pharmacy->pharmacy_name . ' ' . $pharmacy->pharmacy_address) }}" 
+                            :href="pharmacy.map_url" 
                             target="_blank" 
                             rel="noopener noreferrer" 
                             class="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs flex items-center gap-1.5 transition shadow-sm shadow-brand-600/20"
@@ -235,27 +472,42 @@
                         </a>
                     </div>
                 </div>
+            </template>
+        </div>
+
+        {{-- Initial Server-Side Rendered Fallback (Hidden Once Alpine Loads) --}}
+        <div x-cloak class="hidden">
+            @foreach($pharmacies as $pharmacy)
+                <div class="ssr-pharmacy-card">
+                    <h4>{{ $pharmacy->pharmacy_name }}</h4>
+                    <p>{{ $pharmacy->pharmacy_address }}</p>
+                    <p>{{ $pharmacy->pharmacy_phone }}</p>
+                    <a href="{{ $pharmacy->map_location_url ?: 'https://www.google.com/maps/search/?api=1&query=' . urlencode($pharmacy->pharmacy_name . ' ' . $pharmacy->pharmacy_address) }}" target="_blank">Open in Map</a>
+                    <span>Active</span>
+                </div>
             @endforeach
         </div>
 
-        @if(count($pharmacies) === 0)
-            <div class="p-12 text-center bg-white rounded-2xl border border-dashed border-slate-300">
+        {{-- Empty State when no pharmacies exist in directory --}}
+        <template x-if="inRangePharmacies.length === 0 && closestFallbackPharmacies.length === 0">
+            <div class="p-12 text-center bg-white rounded-2xl border border-dashed border-slate-300 mt-6">
                 <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-bold text-slate-800">No active subscriber pharmacies registered yet</h3>
+                <h3 class="text-lg font-bold text-slate-800">No matching pharmacies found</h3>
                 <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">
-                    Approved pharmacies with active licenses will automatically appear in this public directory.
+                    Try adjusting your search terms, changing the region filter, or resetting your search filters.
                 </p>
-                <a 
-                    href="{{ route('pharmacy.register') }}" 
+                <button 
+                    type="button"
+                    @click="resetFilters()" 
                     class="mt-4 inline-block px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold shadow-sm transition"
                 >
-                    Register Your Pharmacy
-                </a>
+                    Reset All Filters
+                </button>
             </div>
-        @endif
+        </template>
     </div>
 </x-app-layout>

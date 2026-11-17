@@ -138,6 +138,90 @@ class Pharmacy extends Model
     }
 
     /**
+     * Extract coordinates from a Google Maps URL, OpenStreetMap URL, or raw lat/long string.
+     *
+     * @return array{lat: float, lng: float}|null
+     */
+    public static function extractCoordinates(?string $input): ?array
+    {
+        if (empty($input)) {
+            return null;
+        }
+
+        // Matches queries like ?q=23.7925,90.4078, @23.7925,90.4078, or plain "23.7925, 90.4078"
+        if (preg_match('/(?:[?&](?:q|query|ll|loc)=|@)?(-?\d{1,2}(?:\.\d+)?)[,\s]+(-?\d{1,3}(?:\.\d+)?)/i', $input, $matches)) {
+            $lat = (float) $matches[1];
+            $lng = (float) $matches[2];
+
+            if ($lat >= -90.0 && $lat <= 90.0 && $lng >= -180.0 && $lng <= 180.0) {
+                return [
+                    'lat' => round($lat, 6),
+                    'lng' => round($lng, 6),
+                ];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get extracted coordinates array [lat, lng] from map_location_url.
+     *
+     * @return array{lat: float, lng: float}|null
+     */
+    public function getCoordinatesAttribute(): ?array
+    {
+        return static::extractCoordinates($this->map_location_url);
+    }
+
+    /**
+     * Get latitude float.
+     */
+    public function getLatitudeAttribute(): ?float
+    {
+        return $this->coordinates['lat'] ?? null;
+    }
+
+    /**
+     * Get longitude float.
+     */
+    public function getLongitudeAttribute(): ?float
+    {
+        return $this->coordinates['lng'] ?? null;
+    }
+
+    /**
+     * Calculate distance in kilometers to another set of coordinates using Haversine formula.
+     */
+    public function distanceTo(float $targetLat, float $targetLng): ?float
+    {
+        $coords = $this->coordinates;
+        if (! $coords) {
+            return null;
+        }
+
+        return static::calculateDistanceKm($coords['lat'], $coords['lng'], $targetLat, $targetLng);
+    }
+
+    /**
+     * Calculate Great Circle distance between two points in kilometers.
+     */
+    public static function calculateDistanceKm(float $lat1, float $lon1, float $lat2, float $lon2): float
+    {
+        $earthRadiusKm = 6371.0;
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return round($earthRadiusKm * $c, 1);
+    }
+
+    /**
      * Guess or extract the location/city from the pharmacy address.
      */
     public function getEstimatedLocationAttribute(): string

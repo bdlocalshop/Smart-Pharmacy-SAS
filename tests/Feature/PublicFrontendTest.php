@@ -41,9 +41,19 @@ class PublicFrontendTest extends TestCase
         ]);
     }
 
-    public function test_home_page_renders_storefront_and_catalog_items(): void
+    public function test_home_page_renders_active_pharmacy_directory(): void
     {
         $response = $this->get('/');
+
+        $response->assertStatus(200)
+            ->assertSee('Smart Pharmacy')
+            ->assertSee('Active Subscriber Pharmacies')
+            ->assertSee('Search by pharmacy name');
+    }
+
+    public function test_products_page_renders_storefront_and_catalog_items(): void
+    {
+        $response = $this->get('/products');
 
         $response->assertStatus(200)
             ->assertSee('Smart Pharmacy')
@@ -270,6 +280,18 @@ class PublicFrontendTest extends TestCase
         $locationResponse->assertStatus(200)
             ->assertSee('Agrabad Meds')
             ->assertDontSee('Gulshan Drug Store');
+
+        // Search by Google Maps URL with coordinates
+        $mapUrlSearch = $this->get('/pharmacies?search=' . urlencode('https://maps.google.com/?q=23.79,90.41') . '&distance=10');
+        $mapUrlSearch->assertStatus(200)
+            ->assertSee('Gulshan Drug Store')
+            ->assertDontSee('Agrabad Meds');
+
+        // Search with coordinates and narrow distance where nothing is in range shows fallback message
+        $distantCoordSearch = $this->get('/pharmacies?search=' . urlencode('25.50,91.50') . '&distance=5');
+        $distantCoordSearch->assertStatus(200)
+            ->assertSee('Nothing is available within the selected area')
+            ->assertSee('Closest Available Pharmacies');
     }
 
     public function test_pharmacy_directory_excludes_unapproved_or_expired_pharmacies(): void

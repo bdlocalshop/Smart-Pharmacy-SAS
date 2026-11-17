@@ -5,11 +5,12 @@ use App\Http\Controllers\PharmacyDirectoryController;
 use App\Http\Controllers\PharmacyRegistrationController;
 use Illuminate\Support\Facades\Route;
 
-// Public storefront showcase
-Route::get('/', [HomeController::class, 'index'])->name('home');
+// Active subscriber pharmacies directory (Default Home Page)
+Route::get('/', [PharmacyDirectoryController::class, 'index'])->name('pharmacy.directory');
+Route::get('/pharmacies', [PharmacyDirectoryController::class, 'index']); // Alias support
 
-// Active subscriber pharmacies directory
-Route::get('/pharmacies', [PharmacyDirectoryController::class, 'index'])->name('pharmacy.directory');
+// Public storefront showcase & catalog
+Route::get('/products', [HomeController::class, 'index'])->name('products');
 
 // Pharmacy self-registration portal
 Route::get('/register-pharmacy', [PharmacyRegistrationController::class, 'create'])->name('pharmacy.register');
