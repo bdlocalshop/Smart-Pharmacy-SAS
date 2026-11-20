@@ -353,9 +353,10 @@ class PublicFrontendTest extends TestCase
         $response = $this->get('/pharmacies');
 
         $response->assertStatus(200)
-            ->assertSee('0.5 km (Default)')
+            ->assertSee('Distance Selector:')
             ->assertSee('10 per page')
+            ->assertSee('type="number"', false)
             ->assertSee('min="0.25"', false)
-            ->assertSee('max="10"', false);
+            ->assertSee('max="5"', false);
     }
 }

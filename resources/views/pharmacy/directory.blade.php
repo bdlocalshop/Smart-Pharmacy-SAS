@@ -312,92 +312,61 @@
                 </div>
             </div>
 
-            {{-- Dedicated Distance Selector (Horizontal Range Slider: 0.25 km to 10 km, default 0.5 km) --}}
-            <div 
-                class="pt-4 border-t border-slate-100 rounded-xl p-4 transition-colors duration-200"
-                :class="isProximityMode ? 'bg-brand-50/50 border border-brand-200/80 shadow-xs' : 'bg-slate-50/60'"
-            >
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
-                    <div class="flex items-center gap-2">
+            {{-- Bottom Row: Quick Region Shortcuts (Left) + Distance Selector Number Input (Right, Marked Position) --}}
+            <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                {{-- Quick Region Pills (Left) --}}
+                <div class="flex items-center gap-2 flex-wrap">
+                    @if(count($locations) > 0)
+                        <span class="text-xs font-medium text-slate-400 mr-1">Quick Region:</span>
+                        <button 
+                            type="button" 
+                            @click="selectedLocation = 'all'"
+                            :class="selectedLocation === 'all' ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                            class="px-3 py-1 rounded-lg text-xs font-semibold transition"
+                        >
+                            All Regions ({{ $totalCount }})
+                        </button>
+                        @foreach($locations as $loc)
+                            <button 
+                                type="button" 
+                                @click="selectedLocation = '{{ strtolower($loc) }}'"
+                                :class="selectedLocation === '{{ strtolower($loc) }}' ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                class="px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1"
+                            >
+                                <span>{{ $loc }}</span>
+                            </button>
+                        @endforeach
+                    @else
+                        <span class="text-xs text-slate-400">Showing all licensed pharmacies</span>
+                    @endif
+                </div>
+
+                {{-- Distance Selector (Number Input Field: 0.25 km - 5 km, Right-Aligned Marked Position) --}}
+                <div class="flex items-center gap-2 self-end sm:self-auto ml-auto">
+                    <label for="distance-input" class="text-xs font-semibold text-slate-600 flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                         <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                         </svg>
-                        <label class="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                            Distance Selector (Proximity Radius)
-                        </label>
-                        <span 
-                            class="text-xs font-extrabold font-mono px-2.5 py-0.5 rounded-md bg-white border border-slate-200 text-brand-600 shadow-2xs"
-                            x-text="distanceKm < 1 ? (distanceKm * 1000).toFixed(0) + ' m (' + Number(distanceKm).toFixed(2) + ' km)' : Number(distanceKm).toFixed(2) + ' km'"
-                        >
-                            0.50 km
-                        </span>
+                        <span>Distance Selector:</span>
+                    </label>
+                    <div class="relative flex items-center">
+                        <input 
+                            type="number" 
+                            id="distance-input"
+                            min="0.25" 
+                            max="5" 
+                            step="0.05" 
+                            x-model.number="distanceKm"
+                            @input="if (distanceKm > 5) distanceKm = 5; if (distanceKm < 0.25 && distanceKm !== '' && distanceKm !== null) distanceKm = 0.25;"
+                            class="w-24 pl-3 pr-8 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs font-bold font-mono text-slate-800 text-right focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition"
+                            title="Set search proximity radius (0.25 km to 5 km)"
+                            placeholder="0.5"
+                        />
+                        <span class="absolute right-2.5 text-[11px] font-semibold text-slate-400 pointer-events-none">km</span>
                     </div>
-
-                    <div class="flex items-center gap-2">
-                        <template x-if="isProximityMode">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Proximity Mode Active: Closest First
-                            </span>
-                        </template>
-                        <template x-if="!isProximityMode">
-                            <span class="text-[11px] text-slate-500 italic">
-                                Paste a Google Maps link or lat,lng to activate live closest-distance sorting
-                            </span>
-                        </template>
-                    </div>
-                </div>
-
-                {{-- The Horizontal Scrollbar / Range Slider (Min: 0.25 km, Max: 10 km, Default: 0.5 km) --}}
-                <div class="space-y-1.5">
-                    <input 
-                        type="range" 
-                        min="0.25" 
-                        max="10" 
-                        step="0.05" 
-                        x-model.number="distanceKm"
-                        class="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600 focus:outline-none transition"
-                        title="Adjust proximity distance (0.25 km to 10 km)"
-                    />
-                    <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                        <span>0.25 km (250m)</span>
-                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-center">
-                            <button type="button" @click="distanceKm = 0.25" :class="distanceKm === 0.25 ? 'text-brand-600 font-bold underline' : 'hover:text-slate-600'">0.25 km</button>
-                            <button type="button" @click="distanceKm = 0.5" :class="distanceKm === 0.5 ? 'text-brand-600 font-bold underline' : 'hover:text-slate-600'">0.5 km (Default)</button>
-                            <button type="button" @click="distanceKm = 1" :class="distanceKm === 1 ? 'text-brand-600 font-bold underline' : 'hover:text-slate-600'">1 km</button>
-                            <button type="button" @click="distanceKm = 2.5" :class="distanceKm === 2.5 ? 'text-brand-600 font-bold underline' : 'hover:text-slate-600'">2.5 km</button>
-                            <button type="button" @click="distanceKm = 5" :class="distanceKm === 5 ? 'text-brand-600 font-bold underline' : 'hover:text-slate-600'">5 km</button>
-                            <button type="button" @click="distanceKm = 10" :class="distanceKm === 10 ? 'text-brand-600 font-bold underline' : 'hover:text-slate-600'">10 km (Max)</button>
-                        </div>
-                        <span>10 km (Max)</span>
-                    </div>
+                    <span class="text-[11px] text-slate-400 font-mono hidden md:inline">(0.25-5 km)</span>
                 </div>
             </div>
-
-            {{-- Location Pill Shortcuts --}}
-            @if(count($locations) > 0)
-                <div class="pt-3 border-t border-slate-100 flex items-center gap-2 flex-wrap">
-                    <span class="text-xs font-medium text-slate-400 mr-1">Quick Region:</span>
-                    <button 
-                        type="button" 
-                        @click="selectedLocation = 'all'"
-                        :class="selectedLocation === 'all' ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                        class="px-3 py-1 rounded-lg text-xs font-semibold transition"
-                    >
-                        All Regions ({{ $totalCount }})
-                    </button>
-                    @foreach($locations as $loc)
-                        <button 
-                            type="button" 
-                            @click="selectedLocation = '{{ strtolower($loc) }}'"
-                            :class="selectedLocation === '{{ strtolower($loc) }}' ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                            class="px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1"
-                        >
-                            <span>{{ $loc }}</span>
-                        </button>
-                    @endforeach
-                </div>
-            @endif
         </div>
 
         {{-- Live Results Header --}}
@@ -433,10 +402,10 @@
                 <div class="mt-4 flex items-center justify-center gap-2">
                     <button 
                         type="button" 
-                        @click="distanceKm = Math.min(10, Math.max(0.25, Math.ceil((closestFallbackPharmacies[0]?.distance || 0.5) * 4) / 4))" 
+                        @click="distanceKm = Math.min(5, Math.max(0.25, Math.ceil((closestFallbackPharmacies[0]?.distance || 0.5) * 4) / 4))" 
                         class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-xs transition"
                     >
-                        Expand radius to include closest (<span x-text="Math.min(10, Math.max(0.25, Math.ceil((closestFallbackPharmacies[0]?.distance || 0.5) * 4) / 4)) + ' km'"></span>)
+                        Expand radius to include closest (<span x-text="Math.min(5, Math.max(0.25, Math.ceil((closestFallbackPharmacies[0]?.distance || 0.5) * 4) / 4)) + ' km'"></span>)
                     </button>
                 </div>
             </div>

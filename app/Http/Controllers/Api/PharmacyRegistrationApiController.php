@@ -30,6 +30,13 @@ class PharmacyRegistrationApiController extends Controller
             $request->merge(['password_confirmation' => $request->input('password')]);
         }
 
+        // Support both comma-separated string and array of slot strings from external clients
+        if ($request->has('opening_hours') && is_array($request->input('opening_hours'))) {
+            $request->merge([
+                'opening_hours' => implode(', ', array_filter(array_map('trim', $request->input('opening_hours')))),
+            ]);
+        }
+
         $validated = $request->validate([
             // Pharmacy business information
             'pharmacy_name' => ['required', 'string', 'max:255'],
@@ -137,6 +144,8 @@ class PharmacyRegistrationApiController extends Controller
                 'pharmacy_id' => $pharmacy->id,
                 'pharmacy_name' => $pharmacy->pharmacy_name,
                 'trade_license_number' => $pharmacy->trade_license_number,
+                'opening_hours' => $pharmacy->opening_hours,
+                'opening_hours_slots' => $pharmacy->opening_hours_slots,
                 'verification_status' => $pharmacy->verification_status->value,
                 'bound_device' => [
                     'device_uuid' => $deviceUuid,
@@ -214,6 +223,8 @@ class PharmacyRegistrationApiController extends Controller
                 'pharmacy_id' => $pharmacy->id,
                 'pharmacy_name' => $pharmacy->pharmacy_name,
                 'trade_license_number' => $pharmacy->trade_license_number,
+                'opening_hours' => $pharmacy->opening_hours,
+                'opening_hours_slots' => $pharmacy->opening_hours_slots,
                 'verification_status' => $pharmacy->verification_status->value,
                 'is_approved' => $pharmacy->verification_status === VerificationStatus::APPROVED,
                 'license' => $license ? [

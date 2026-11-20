@@ -108,6 +108,8 @@ class OwnerVerificationApiController extends Controller
                     'pharmacy_name' => $pharmacy->pharmacy_name,
                     'trade_license_number' => $pharmacy->trade_license_number,
                     'pharmacy_phone' => $pharmacy->pharmacy_phone,
+                    'opening_hours' => $pharmacy->opening_hours,
+                    'opening_hours_slots' => $pharmacy->opening_hours_slots,
                     'pharmacy_address' => $pharmacy->pharmacy_address,
                     'map_location_url' => $pharmacy->map_location_url,
                     'verification_status' => $pharmacy->verification_status->value,

@@ -24,8 +24,8 @@ class PharmacyDirectoryController extends Controller
         $searchCoords = Pharmacy::extractCoordinates($searchRaw);
         $selectedLocation = strtolower(trim((string) $request->input('location', 'all')));
         $distanceKm = (float) $request->input('distance', 0.5);
-        if ($distanceKm < 0.25) {
-            $distanceKm = 0.5;
+        if ($distanceKm < 0.25 || $distanceKm > 5) {
+            $distanceKm = $distanceKm > 5 ? 5.0 : 0.5;
         }
 
         $filteredPharmacies = $allActive;

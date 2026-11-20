@@ -412,4 +412,87 @@ class DeviceAppRegistrationApiTest extends TestCase
                 ],
             ]);
     }
+
+    public function test_registration_with_opening_hours_string_and_array_formats(): void
+    {
+        // 1. String format with comma separation
+        $stringPayload = [
+            'pharmacy_name' => 'Slot String Pharmacy',
+            'trade_license_number' => 'TL-SLOT-STR-01',
+            'pharmacy_address' => 'Road 10, Dhanmondi',
+            'pharmacy_phone' => '+8801700998811',
+            'opening_hours' => '8:00AM-1:00PM, 2:00PM-5:00PM, 6:00PM-11:30PM',
+            'owner_name' => 'Slot Owner',
+            'owner_phone' => '+8801800998811',
+            'password' => 'SafePass123!',
+            'device_uuid' => 'hw_slot_str_01',
+        ];
+
+        $strResponse = $this->postJson('/api/v1/pharmacy/register', $stringPayload);
+        $strResponse->assertStatus(201)
+            ->assertJson([
+                'status' => 'success',
+                'data' => [
+                    'pharmacy_name' => 'Slot String Pharmacy',
+                    'opening_hours' => '8:00AM-1:00PM, 2:00PM-5:00PM, 6:00PM-11:30PM',
+                    'opening_hours_slots' => [
+                        '8:00AM-1:00PM',
+                        '2:00PM-5:00PM',
+                        '6:00PM-11:30PM',
+                    ],
+                ],
+            ]);
+
+        // Verify status API includes opening_hours and slots
+        $statusResponse = $this->getJson('/api/v1/pharmacy/status?' . http_build_query([
+            'trade_license_number' => 'TL-SLOT-STR-01',
+            'device_uuid' => 'hw_slot_str_01',
+        ]));
+
+        $statusResponse->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'data' => [
+                    'pharmacy_name' => 'Slot String Pharmacy',
+                    'opening_hours' => '8:00AM-1:00PM, 2:00PM-5:00PM, 6:00PM-11:30PM',
+                    'opening_hours_slots' => [
+                        '8:00AM-1:00PM',
+                        '2:00PM-5:00PM',
+                        '6:00PM-11:30PM',
+                    ],
+                ],
+            ]);
+
+        // 2. Array format (sent by mobile or desktop apps)
+        $arrayPayload = [
+            'pharmacy_name' => 'Slot Array Pharmacy',
+            'trade_license_number' => 'TL-SLOT-ARR-01',
+            'pharmacy_address' => 'Road 11, Banani',
+            'pharmacy_phone' => '+8801700998822',
+            'opening_hours' => [
+                '8:00AM-1:00PM',
+                '2:00PM-5:00PM',
+                '6:00PM-11:30PM',
+            ],
+            'owner_name' => 'Array Owner',
+            'owner_phone' => '+8801800998822',
+            'password' => 'SafePass123!',
+            'device_uuid' => 'hw_slot_arr_01',
+        ];
+
+        $arrResponse = $this->postJson('/api/v1/pharmacy/register', $arrayPayload);
+        $arrResponse->assertStatus(201)
+            ->assertJson([
+                'status' => 'success',
+                'data' => [
+                    'pharmacy_name' => 'Slot Array Pharmacy',
+                    'opening_hours' => '8:00AM-1:00PM, 2:00PM-5:00PM, 6:00PM-11:30PM',
+                    'opening_hours_slots' => [
+                        '8:00AM-1:00PM',
+                        '2:00PM-5:00PM',
+                        '6:00PM-11:30PM',
+                    ],
+                ],
+            ]);
+    }
 }
