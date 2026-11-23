@@ -359,4 +359,44 @@ class PublicFrontendTest extends TestCase
             ->assertSee('min="0.25"', false)
             ->assertSee('max="5"', false);
     }
+
+    public function test_language_switch_route_persists_locale_in_session_and_translates_ui(): void
+    {
+        // Default English renders 'বাং' button linking to '/lang/bn'
+        $initialResponse = $this->get('/');
+        $initialResponse->assertStatus(200)
+            ->assertSee('বাং')
+            ->assertSee('/lang/bn');
+
+        // Switch to Bangla
+        $response = $this->get('/lang/bn');
+        $response->assertRedirect();
+        $response->assertSessionHas('locale', 'bn');
+
+        // Request page with session locale set to 'bn'
+        $pageResponse = $this->withSession(['locale' => 'bn'])->get('/');
+        $pageResponse->assertStatus(200)
+            ->assertSee('স্মার্ট ফার্মেসি')
+            ->assertSee('সক্রিয় সাবস্ক্রাইবার ফার্মেসিসমূহ')
+            ->assertSee('পণ্য ও ওয়ার্কস্টেশন')
+            ->assertSee('ক্লাউড সেবাসমূহ')
+            // When in Bangla, button text is 'EN' linking to '/lang/en'
+            ->assertSee('EN')
+            ->assertSee('/lang/en');
+
+        // Switch to English
+        $responseEn = $this->get('/lang/en');
+        $responseEn->assertRedirect();
+        $responseEn->assertSessionHas('locale', 'en');
+
+        // Request page with session locale set to 'en'
+        $pageResponseEn = $this->withSession(['locale' => 'en'])->get('/');
+        $pageResponseEn->assertStatus(200)
+            ->assertSee('Smart Pharmacy')
+            ->assertSee('Active Subscriber Pharmacies')
+            ->assertSee('Products & Workstations')
+            // When in English, button text is 'বাং' linking to '/lang/bn'
+            ->assertSee('বাং')
+            ->assertSee('/lang/bn');
+    }
 }

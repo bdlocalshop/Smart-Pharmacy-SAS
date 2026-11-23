@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'Smart Pharmacy - Cloud Licensing & Offline POS Architecture' }}</title>
+    <title>{{ $title ?? __('Smart Pharmacy - Cloud Licensing & Offline POS Architecture') }}</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo.png') }}">
     
@@ -63,30 +63,67 @@
                 <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
                     <a href="{{ route('pharmacy.directory') }}" class="hover:text-brand-600 transition flex items-center gap-1 font-semibold text-brand-600">
                         <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                        Active Pharmacies
+                        {{ __('Active Pharmacies') }}
                     </a>
-                    <a href="{{ url('/products#products') }}" class="hover:text-brand-600 transition">Products & Workstations</a>
-                    <a href="{{ url('/products#services') }}" class="hover:text-brand-600 transition">Cloud Services</a>
+                    <a href="{{ url('/products#products') }}" class="hover:text-brand-600 transition">{{ __('Products & Workstations') }}</a>
+                    <a href="{{ url('/products#services') }}" class="hover:text-brand-600 transition">{{ __('Cloud Services') }}</a>
                     <a href="{{ route('pharmacy.status') }}" class="hover:text-brand-600 transition flex items-center gap-1">
                         <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-                        Track Status
+                        {{ __('Track Status') }}
                     </a>
                 </nav>
 
-                {{-- CTA Buttons --}}
+                {{-- CTA Buttons & Top-Right Language Switcher --}}
                 <div class="hidden md:flex items-center gap-3">
                     <a href="{{ route('pharmacy.register') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm shadow-sm transition shadow-brand-600/20">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
-                        Register Pharmacy
+                        {{ __('Register Pharmacy') }}
                     </a>
                     <a href="{{ url('/admin') }}" class="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 font-medium text-xs transition">
                         <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                        Admin Portal
+                        {{ __('Admin Portal') }}
                     </a>
+
+                    {{-- Single-Text Language Toggle at Far-Right Marked Position --}}
+                    @if(app()->getLocale() === 'bn')
+                        <a 
+                            href="{{ route('lang.switch', 'en') }}" 
+                            class="inline-flex items-center justify-center min-w-[42px] px-3 py-1.5 rounded-lg border border-slate-300 hover:border-brand-500 bg-white hover:bg-slate-50 text-slate-800 hover:text-brand-600 font-bold text-xs shadow-2xs transition"
+                            title="Switch to English"
+                        >
+                            EN
+                        </a>
+                    @else
+                        <a 
+                            href="{{ route('lang.switch', 'bn') }}" 
+                            class="inline-flex items-center justify-center min-w-[42px] px-3 py-1.5 rounded-lg border border-slate-300 hover:border-brand-500 bg-white hover:bg-slate-50 text-slate-800 hover:text-brand-600 font-bold text-xs shadow-2xs transition"
+                            title="বাংলায় পরিবর্তন করুন"
+                        >
+                            বাং
+                        </a>
+                    @endif
                 </div>
 
-                {{-- Mobile Hamburger --}}
-                <div class="flex items-center md:hidden">
+                {{-- Mobile Hamburger & Language Switcher --}}
+                <div class="flex items-center gap-2 md:hidden">
+                    @if(app()->getLocale() === 'bn')
+                        <a 
+                            href="{{ route('lang.switch', 'en') }}" 
+                            class="px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-bold text-slate-800 hover:text-brand-600 bg-white shadow-2xs transition"
+                            title="Switch to English"
+                        >
+                            EN
+                        </a>
+                    @else
+                        <a 
+                            href="{{ route('lang.switch', 'bn') }}" 
+                            class="px-2.5 py-1 rounded-lg border border-slate-300 text-xs font-bold text-slate-800 hover:text-brand-600 bg-white shadow-2xs transition"
+                            title="বাংলায় পরিবর্তন করুন"
+                        >
+                            বাং
+                        </a>
+                    @endif
+
                     <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path x-show="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -99,13 +136,13 @@
 
         {{-- Mobile Menu Dropdown --}}
         <div x-show="mobileMenuOpen" x-cloak class="md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-4 space-y-2">
-            <a href="{{ route('pharmacy.directory') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-brand-600 hover:bg-brand-50">Active Subscriber Pharmacies</a>
-            <a href="{{ url('/products#products') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">Products & Workstations</a>
-            <a href="{{ url('/products#services') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">Cloud Services</a>
-            <a href="{{ route('pharmacy.status') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">Track Registration Status</a>
+            <a href="{{ route('pharmacy.directory') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-brand-600 hover:bg-brand-50">{{ __('Active Subscriber Pharmacies') }}</a>
+            <a href="{{ url('/products#products') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">{{ __('Products & Workstations') }}</a>
+            <a href="{{ url('/products#services') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">{{ __('Cloud Services') }}</a>
+            <a href="{{ route('pharmacy.status') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100">{{ __('Track Registration Status') }}</a>
             <div class="pt-2 border-t border-slate-100 flex flex-col gap-2">
-                <a href="{{ route('pharmacy.register') }}" class="w-full text-center py-2.5 rounded-lg bg-brand-600 text-white font-medium text-sm">Register Pharmacy</a>
-                <a href="{{ url('/admin') }}" class="w-full text-center py-2 rounded-lg border border-slate-200 text-slate-700 text-xs font-medium">Admin Portal</a>
+                <a href="{{ route('pharmacy.register') }}" class="w-full text-center py-2.5 rounded-lg bg-brand-600 text-white font-medium text-sm">{{ __('Register Pharmacy') }}</a>
+                <a href="{{ url('/admin') }}" class="w-full text-center py-2 rounded-lg border border-slate-200 text-slate-700 text-xs font-medium">{{ __('Admin Portal') }}</a>
             </div>
         </div>
     </header>
@@ -122,44 +159,44 @@
                 <div class="space-y-4">
                     <div class="flex items-center gap-2.5">
                         <img src="{{ asset('images/logo.png') }}" alt="Smart Pharmacy Logo" class="h-8 w-auto object-contain max-h-8" />
-                        <span class="text-lg font-bold text-white">Smart Pharmacy</span>
+                        <span class="text-lg font-bold text-white">{{ __('Smart Pharmacy') }}</span>
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed">
-                        Offline-first retail & clinical pharmacy suite with single-device cryptographic hardware binding, automated cloud recovery, and zero-downtime reliability.
+                        {{ __('Offline-first retail & clinical pharmacy suite with single-device cryptographic hardware binding, automated cloud recovery, and zero-downtime reliability.') }}
                     </p>
                 </div>
                 <div>
-                    <h4 class="text-white text-xs font-semibold uppercase tracking-wider mb-3">Platform Solutions</h4>
+                    <h4 class="text-white text-xs font-semibold uppercase tracking-wider mb-3">{{ __('Platform Solutions') }}</h4>
                     <ul class="space-y-2 text-xs">
-                        <li><a href="{{ url('/products#products') }}" class="hover:text-white transition">Desktop POS Workstation</a></li>
-                        <li><a href="{{ url('/products#products') }}" class="hover:text-white transition">Mobile Dispense Assistant</a></li>
-                        <li><a href="{{ url('/products#services') }}" class="hover:text-white transition">Cloud Nightly Snapshots</a></li>
-                        <li><a href="{{ url('/products#services') }}" class="hover:text-white transition">Drug Interaction Feed</a></li>
+                        <li><a href="{{ url('/products#products') }}" class="hover:text-white transition">{{ __('Desktop POS Workstation') }}</a></li>
+                        <li><a href="{{ url('/products#products') }}" class="hover:text-white transition">{{ __('Mobile Dispense Assistant') }}</a></li>
+                        <li><a href="{{ url('/products#services') }}" class="hover:text-white transition">{{ __('Cloud Nightly Snapshots') }}</a></li>
+                        <li><a href="{{ url('/products#services') }}" class="hover:text-white transition">{{ __('Drug Interaction Feed') }}</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="text-white text-xs font-semibold uppercase tracking-wider mb-3">Pharmacies</h4>
+                    <h4 class="text-white text-xs font-semibold uppercase tracking-wider mb-3">{{ __('Pharmacies') }}</h4>
                     <ul class="space-y-2 text-xs">
-                        <li><a href="{{ route('pharmacy.directory') }}" class="hover:text-white transition font-medium text-emerald-400">Active Subscriber Network</a></li>
-                        <li><a href="{{ route('pharmacy.register') }}" class="hover:text-white transition">Self-Registration Portal</a></li>
-                        <li><a href="{{ route('pharmacy.status') }}" class="hover:text-white transition">Track Verification Status</a></li>
-                        <li><a href="{{ url('/admin/api-docs') }}" class="hover:text-white transition">HMAC Developer API Docs</a></li>
-                        <li><a href="{{ url('/admin') }}" class="hover:text-white transition">Filament Admin Console</a></li>
+                        <li><a href="{{ route('pharmacy.directory') }}" class="hover:text-white transition font-medium text-emerald-400">{{ __('Active Subscriber Network') }}</a></li>
+                        <li><a href="{{ route('pharmacy.register') }}" class="hover:text-white transition">{{ __('Self-Registration Portal') }}</a></li>
+                        <li><a href="{{ route('pharmacy.status') }}" class="hover:text-white transition">{{ __('Track Registration Status') }}</a></li>
+                        <li><a href="{{ url('/admin/api-docs') }}" class="hover:text-white transition">{{ __('HMAC Developer API Docs') }}</a></li>
+                        <li><a href="{{ url('/admin') }}" class="hover:text-white transition">{{ __('Filament Admin Console') }}</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="text-white text-xs font-semibold uppercase tracking-wider mb-3">Security & Compliance</h4>
+                    <h4 class="text-white text-xs font-semibold uppercase tracking-wider mb-3">{{ __('Security & Compliance') }}</h4>
                     <p class="text-xs text-slate-400 leading-relaxed mb-3">
-                        HMAC-SHA256 authenticated, replay attack protected (±300s window), and private storage encrypted backups.
+                        {{ __('HMAC-SHA256 authenticated, replay attack protected (±300s window), and private storage encrypted backups.') }}
                     </p>
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 text-[11px] font-mono text-emerald-400 border border-slate-700">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        1-Device = 1-License Active
+                        {{ __('1-Device = 1-License Active') }}
                     </span>
                 </div>
             </div>
             <div class="mt-8 pt-8 border-t border-slate-800 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p>&copy; {{ date('Y') }} Smart Pharmacy Engine. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} {{ __('Smart Pharmacy') }}. {{ __('All rights reserved.') }}</p>
                 <p class="flex items-center gap-4">
                     <span>Engine v1.2</span>
                     <span>Laravel 11.x</span>

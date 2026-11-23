@@ -10,43 +10,43 @@
             <div class="text-center max-w-3xl mx-auto">
                 <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-xs font-medium text-emerald-400 mb-6 shadow-inner">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Smart Pharmacy v1.2 Enterprise Engine Active
+                    {{ __('Smart Pharmacy v1.2 Enterprise Engine Active') }}
                 </div>
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-tight">
-                    Offline-First POS & Centralized <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-emerald-300">Cloud Licensing</span>
+                    {{ __('Offline-First POS & Centralized') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-emerald-300">{{ __('Cloud Licensing') }}</span>
                 </h1>
                 <p class="mt-6 text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
-                    Empowering clinical and retail pharmacies with resilient desktop workstations that never drop a sale during internet outages, coupled with strict 1-device cryptographic licensing and automated cloud disaster recovery snapshots.
+                    {{ __('Empowering clinical and retail pharmacies with resilient desktop workstations that never drop a sale during internet outages, coupled with strict 1-device cryptographic licensing and automated cloud disaster recovery snapshots.') }}
                 </p>
 
                 <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <a href="{{ route('pharmacy.register') }}" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm shadow-lg shadow-brand-500/25 transition flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        Register Your Pharmacy
+                        {{ __('Register Your Pharmacy') }}
                     </a>
                     <a href="#catalog" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm transition flex items-center justify-center gap-2">
                         <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
-                        Explore Products & Services
+                        {{ __('Explore Products & Services') }}
                     </a>
                 </div>
 
                 {{-- Pillar Badges --}}
                 <div class="mt-12 pt-8 border-t border-slate-800/80 grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
                     <div class="p-3 bg-slate-800/40 rounded-lg border border-slate-700/50">
-                        <div class="text-emerald-400 font-bold text-lg">100% Offline</div>
-                        <div class="text-xs text-slate-400">Zero-downtime local SQLite engine</div>
+                        <div class="text-emerald-400 font-bold text-lg">{{ __('100% Offline') }}</div>
+                        <div class="text-xs text-slate-400">{{ __('Zero-downtime local SQLite engine') }}</div>
                     </div>
                     <div class="p-3 bg-slate-800/40 rounded-lg border border-slate-700/50">
-                        <div class="text-emerald-400 font-bold text-lg">1-Device Lock</div>
-                        <div class="text-xs text-slate-400">Hardware UUID strict binding</div>
+                        <div class="text-emerald-400 font-bold text-lg">{{ __('1-Device Lock') }}</div>
+                        <div class="text-xs text-slate-400">{{ __('Hardware UUID strict binding') }}</div>
                     </div>
                     <div class="p-3 bg-slate-800/40 rounded-lg border border-slate-700/50">
-                        <div class="text-emerald-400 font-bold text-lg">HMAC SHA-256</div>
-                        <div class="text-xs text-slate-400">Replay-protected API security</div>
+                        <div class="text-emerald-400 font-bold text-lg">{{ __('HMAC SHA-256') }}</div>
+                        <div class="text-xs text-slate-400">{{ __('Replay-protected API security') }}</div>
                     </div>
                     <div class="p-3 bg-slate-800/40 rounded-lg border border-slate-700/50">
-                        <div class="text-emerald-400 font-bold text-lg">Cloud Backups</div>
-                        <div class="text-xs text-slate-400">Private encrypted snapshot vault</div>
+                        <div class="text-emerald-400 font-bold text-lg">{{ __('Cloud Backups') }}</div>
+                        <div class="text-xs text-slate-400">{{ __('Private encrypted snapshot vault') }}</div>
                     </div>
                 </div>
             </div>
@@ -84,9 +84,9 @@
     >
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
             <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-brand-600 block mb-1">Storefront Showcase</span>
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Products & Digital Pharmacy Services</h2>
-                <p class="text-sm text-slate-500 mt-1">Browse verified workstation editions, mobile assistants, and cloud infrastructure addons.</p>
+                <span class="text-xs font-bold uppercase tracking-wider text-brand-600 block mb-1">{{ __('Storefront Showcase') }}</span>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ __('Products & Digital Pharmacy Services') }}</h2>
+                <p class="text-sm text-slate-500 mt-1">{{ __('Browse verified workstation editions, mobile assistants, and cloud infrastructure addons.') }}</p>
             </div>
 
             {{-- Live Search Input --}}
@@ -97,7 +97,7 @@
                 <input 
                     type="text" 
                     x-model="searchQuery" 
-                    placeholder="Search catalog items..." 
+                    placeholder="{{ __('Search catalog items...') }}" 
                     class="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 shadow-sm"
                 />
             </div>
@@ -111,7 +111,7 @@
                 :class="activeFilter === 'all' ? 'bg-brand-600 text-white shadow-sm' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'" 
                 class="px-4 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap"
             >
-                All Solutions ({{ $items->count() }})
+                {{ __('All Solutions') }} ({{ $items->count() }})
             </button>
             <button 
                 id="products"
@@ -121,7 +121,7 @@
                 class="px-4 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5"
             >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                Software & Hardware Products ({{ $productsCount }})
+                {{ __('Software & Hardware Products') }} ({{ $productsCount }})
             </button>
             <button 
                 id="services"
@@ -131,7 +131,7 @@
                 class="px-4 py-2 rounded-lg text-xs font-semibold transition whitespace-nowrap flex items-center gap-1.5"
             >
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z" /></svg>
-                Cloud Infrastructure Services ({{ $servicesCount }})
+                {{ __('Cloud Infrastructure Services') }} ({{ $servicesCount }})
             </button>
         </div>
 
@@ -155,7 +155,7 @@
                             <span 
                                 :class="item.item_type === 'product' ? 'bg-sky-50 text-sky-700 border-sky-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'"
                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border uppercase tracking-wide"
-                                x-text="item.item_type === 'product' ? 'Product' : 'Cloud Service'"
+                                x-text="item.item_type === 'product' ? '{{ __('Product') }}' : '{{ __('Cloud Service') }}'"
                             ></span>
                         </div>
 
@@ -165,7 +165,7 @@
                                 <span>$<span x-text="parseFloat(item.price).toFixed(2)"></span></span>
                             </template>
                             <template x-if="!item.price">
-                                <span class="text-slate-500 font-medium">Custom Quote</span>
+                                <span class="text-slate-500 font-medium">{{ __('Custom Quote') }}</span>
                             </template>
                         </div>
                     </div>
@@ -184,7 +184,7 @@
                                 @click="openModal(item)"
                                 class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-brand-600 text-white text-xs font-semibold transition"
                             >
-                                Details & Specs
+                                {{ __('Details & Specs') }}
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                             </button>
                         </div>
@@ -196,9 +196,9 @@
         {{-- Empty Search Fallback --}}
         <div x-show="filteredItems.length === 0" x-cloak class="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 p-8">
             <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <h4 class="text-base font-semibold text-slate-800">No matching solutions found</h4>
-            <p class="text-xs text-slate-500 mt-1">Try adjusting your keyword or reset the category filter.</p>
-            <button type="button" @click="activeFilter = 'all'; searchQuery = ''" class="mt-4 px-4 py-2 rounded-lg bg-brand-600 text-white text-xs font-semibold">Reset Filter</button>
+            <h4 class="text-base font-semibold text-slate-800">{{ __('No matching solutions found') }}</h4>
+            <p class="text-xs text-slate-500 mt-1">{{ __('Try adjusting your keyword or reset the category filter.') }}</p>
+            <button type="button" @click="activeFilter = 'all'; searchQuery = ''" class="mt-4 px-4 py-2 rounded-lg bg-brand-600 text-white text-xs font-semibold">{{ __('Reset Filter') }}</button>
         </div>
 
         {{-- Product Detail Modal (Alpine.js driven) --}}
@@ -254,7 +254,7 @@
                                         <span 
                                             :class="selectedItem.item_type === 'product' ? 'text-sky-700 bg-sky-50' : 'text-emerald-700 bg-emerald-50'"
                                             class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider mb-1"
-                                            x-text="selectedItem.item_type === 'product' ? 'Workstation Product' : 'Cloud Service Addon'"
+                                            x-text="selectedItem.item_type === 'product' ? '{{ __('Workstation Product') }}' : '{{ __('Cloud Service Addon') }}'"
                                         ></span>
                                         <h3 class="text-xl font-bold text-slate-900" x-text="selectedItem.title"></h3>
                                     </div>
@@ -267,25 +267,25 @@
                             {{-- Modal Body --}}
                             <div class="p-6 space-y-4 text-sm text-slate-600">
                                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                                    <span class="text-xs text-slate-400 font-mono" x-text="'Identifier Slug: ' + selectedItem.slug"></span>
+                                    <span class="text-xs text-slate-400 font-mono" x-text="'{{ __('Identifier Slug:') }} ' + selectedItem.slug"></span>
                                     <div class="text-lg font-extrabold text-slate-900">
                                         <template x-if="selectedItem.price">
                                             <span>$<span x-text="parseFloat(selectedItem.price).toFixed(2)"></span> <span class="text-xs font-normal text-slate-400">USD</span></span>
                                         </template>
                                         <template x-if="!selectedItem.price">
-                                            <span class="text-sm font-semibold text-brand-600">Enterprise Quote</span>
+                                            <span class="text-sm font-semibold text-brand-600">{{ __('Enterprise Quote') }}</span>
                                         </template>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Overview</h4>
+                                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{{ __('Overview') }}</h4>
                                     <p class="text-slate-700 leading-relaxed font-normal" x-text="selectedItem.short_description"></p>
                                 </div>
 
                                 <template x-if="selectedItem.full_description">
                                     <div class="pt-3 border-t border-slate-100">
-                                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Technical Specifications & Architecture</h4>
+                                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">{{ __('Technical Specifications & Architecture') }}</h4>
                                         <div class="text-xs text-slate-600 leading-relaxed prose prose-sm max-w-none" x-html="selectedItem.full_description"></div>
                                     </div>
                                 </template>
@@ -293,13 +293,13 @@
 
                             {{-- Modal Footer --}}
                             <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                                <span class="text-[11px] text-slate-400">Available for verified Smart Pharmacy licensed pharmacies.</span>
+                                <span class="text-[11px] text-slate-400">{{ __('Available for verified Smart Pharmacy licensed pharmacies.') }}</span>
                                 <div class="flex items-center gap-2 w-full sm:w-auto">
                                     <button type="button" @click="closeModal()" class="w-full sm:w-auto px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-semibold">
-                                        Close
+                                        {{ __('Close') }}
                                     </button>
                                     <a href="{{ route('pharmacy.register') }}" class="w-full sm:w-auto px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold text-center">
-                                        Register Pharmacy & Inquire
+                                        {{ __('Register Pharmacy & Inquire') }}
                                     </a>
                                 </div>
                             </div>
@@ -337,13 +337,13 @@
                 <div>
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold mb-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Live Subscriber Network
+                        {{ __('Live Subscriber Network') }}
                     </div>
-                    <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Active Subscriber Pharmacies</h2>
-                    <p class="text-sm text-slate-500 mt-1">Explore certified retail & hospital pharmacies running on Smart Pharmacy Engine.</p>
+                    <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ __('Active Subscriber Pharmacies') }}</h2>
+                    <p class="text-sm text-slate-500 mt-1">{{ __('Explore certified retail & hospital pharmacies running on Smart Pharmacy Engine.') }}</p>
                 </div>
                 <a href="{{ route('pharmacy.directory') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 hover:text-brand-700 bg-white border border-slate-200 hover:border-brand-300 px-4 py-2.5 rounded-xl shadow-sm transition">
-                    <span>View Dedicated Directory</span>
+                    <span>{{ __('View Dedicated Directory') }}</span>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                 </a>
             </div>
@@ -359,7 +359,7 @@
                         <input 
                             type="text" 
                             x-model="pharmacySearch" 
-                            placeholder="Search active pharmacy by name, address, or phone..."
+                            placeholder="{{ __('Search active pharmacy by name, address, or phone...') }}"
                             class="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50/50 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition"
                         />
                     </div>
@@ -371,7 +371,7 @@
                                 x-model="pharmacyLocation" 
                                 class="w-full pl-3 pr-8 py-2 rounded-xl border border-slate-200 bg-slate-50/50 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition appearance-none cursor-pointer"
                             >
-                                <option value="all">All Locations</option>
+                                <option value="all">{{ __('All Locations') }}</option>
                                 @foreach($pharmacyLocations as $loc)
                                     <option value="{{ strtolower($loc) }}">{{ $loc }}</option>
                                 @endforeach
@@ -387,7 +387,7 @@
                                 @click="pharmacySearch = ''; pharmacyLocation = 'all'" 
                                 class="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100"
                             >
-                                Reset
+                                {{ __('Reset') }}
                             </button>
                         </template>
                     </div>
@@ -396,14 +396,14 @@
                 {{-- Location Pills --}}
                 @if(count($pharmacyLocations) > 0)
                     <div class="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2 flex-wrap">
-                        <span class="text-[11px] font-medium text-slate-400">Filter Location:</span>
+                        <span class="text-[11px] font-medium text-slate-400">{{ __('Filter Location:') }}</span>
                         <button 
                             type="button" 
                             @click="pharmacyLocation = 'all'"
                             :class="pharmacyLocation === 'all' ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
                             class="px-2.5 py-1 rounded-md text-[11px] font-semibold transition"
                         >
-                            All ({{ count($activePharmacies) }})
+                            {{ __('All') }} ({{ count($activePharmacies) }})
                         </button>
                         @foreach($pharmacyLocations as $loc)
                             <button 
@@ -439,12 +439,12 @@
                                     </div>
                                     <div>
                                         <h3 class="text-base font-bold text-slate-900">{{ $pharmacy->pharmacy_name }}</h3>
-                                        <span class="text-[10px] font-mono text-slate-400">License: {{ $pharmacy->trade_license_number }}</span>
+                                        <span class="text-[10px] font-mono text-slate-400">{{ __('License:') }} {{ $pharmacy->trade_license_number }}</span>
                                     </div>
                                 </div>
                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200/60 shrink-0">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    Active
+                                    {{ __('Active') }}
                                 </span>
                             </div>
 
@@ -467,7 +467,7 @@
                         <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
                             <a href="tel:{{ $pharmacy->pharmacy_phone }}" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-200/60 font-semibold text-xs flex items-center gap-1.5 transition">
                                 <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                                Call
+                                {{ __('Call') }}
                             </a>
 
                             {{-- Map Link opening in new tab --}}
@@ -477,7 +477,7 @@
                                 rel="noopener noreferrer" 
                                 class="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs flex items-center gap-1.5 transition shadow-sm shadow-brand-600/20"
                             >
-                                <span>Open in Map</span>
+                                <span>{{ __('Open in Map') }}</span>
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                             </a>
                         </div>
@@ -487,7 +487,7 @@
 
             @if(count($activePharmacies) === 0)
                 <div class="p-8 text-center bg-white rounded-2xl border border-dashed border-slate-300 mt-4">
-                    <p class="text-sm font-semibold text-slate-700">No active subscriber pharmacies registered yet.</p>
+                    <p class="text-sm font-semibold text-slate-700">{{ __('No active subscriber pharmacies registered yet.') }}</p>
                 </div>
             @endif
         </div>
@@ -497,34 +497,34 @@
     <section class="py-16 bg-white border-t border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-12">
-                <span class="text-xs font-bold uppercase tracking-wider text-brand-600 block mb-1">Architecture & Onboarding</span>
-                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">How Smart Pharmacy Engine Operates</h2>
-                <p class="text-sm text-slate-500 mt-2">End-to-end flow from registration to offline workstation hardware binding.</p>
+                <span class="text-xs font-bold uppercase tracking-wider text-brand-600 block mb-1">{{ __('Architecture & Onboarding') }}</span>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ __('How Smart Pharmacy Engine Operates') }}</h2>
+                <p class="text-sm text-slate-500 mt-2">{{ __('End-to-end flow from registration to offline workstation hardware binding.') }}</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
                 <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col">
                     <div class="w-10 h-10 rounded-xl bg-brand-600 text-white font-bold flex items-center justify-center mb-4">1</div>
-                    <h3 class="text-base font-bold text-slate-900 mb-1">Self-Registration</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed">Pharmacy submits business info, trade license, owner contact, and verified physical map pin.</p>
+                    <h3 class="text-base font-bold text-slate-900 mb-1">{{ __('Self-Registration') }}</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">{{ __('Pharmacy submits business info, trade license, owner contact, and verified physical map pin.') }}</p>
                 </div>
 
                 <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col">
                     <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center mb-4">2</div>
-                    <h3 class="text-base font-bold text-slate-900 mb-1">Admin Verification</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed">Admin reviews documentation on Filament panel and approves with initial session days (default: 30d).</p>
+                    <h3 class="text-base font-bold text-slate-900 mb-1">{{ __('Admin Verification') }}</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">{{ __('Admin reviews documentation on Filament panel and approves with initial session days (default: 30d).') }}</p>
                 </div>
 
                 <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col">
                     <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center mb-4">3</div>
-                    <h3 class="text-base font-bold text-slate-900 mb-1">1-Device Lock</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed">Workstation validates via HMAC-SHA256. The physical machine UUID is bound strictly to the license.</p>
+                    <h3 class="text-base font-bold text-slate-900 mb-1">{{ __('1-Device Lock') }}</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">{{ __('Workstation validates via HMAC-SHA256. The physical machine UUID is bound strictly to the license.') }}</p>
                 </div>
 
                 <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col">
                     <div class="w-10 h-10 rounded-xl bg-purple-600 text-white font-bold flex items-center justify-center mb-4">4</div>
-                    <h3 class="text-base font-bold text-slate-900 mb-1">Nightly Cloud Sync</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed">Automated compressed SQLite snapshots push to private cloud storage with tamper validation.</p>
+                    <h3 class="text-base font-bold text-slate-900 mb-1">{{ __('Nightly Cloud Sync') }}</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">{{ __('Automated compressed SQLite snapshots push to private cloud storage with tamper validation.') }}</p>
                 </div>
             </div>
         </div>

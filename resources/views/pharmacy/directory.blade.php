@@ -5,13 +5,13 @@
             <div class="max-w-3xl">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-semibold text-emerald-400 mb-4">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Verified Subscriber Network
+                    {{ __('Verified Subscriber Network') }}
                 </div>
                 <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
-                    Active Subscriber Pharmacies
+                    {{ __('Active Subscriber Pharmacies') }}
                 </h1>
                 <p class="mt-3 text-slate-300 text-sm sm:text-base leading-relaxed">
-                    Search and locate licensed pharmacies by name, address, phone, or paste a Google Maps link / coordinates to find the nearest partner branch within your chosen distance.
+                    {{ __('Search and locate licensed pharmacies by name, address, phone, or paste a Google Maps link / coordinates to find the nearest partner branch within your chosen distance.') }}
                 </p>
             </div>
         </div>
@@ -244,7 +244,7 @@
                     <input 
                         type="text" 
                         x-model.debounce.200ms="searchQuery" 
-                        placeholder="Search by pharmacy name, address, phone, Google Maps link, or coordinates..."
+                        placeholder="{{ __('Search by pharmacy name, address, phone, Google Maps link, or coordinates...') }}"
                         class="w-full pl-10 pr-24 py-2.5 rounded-xl border border-slate-300 bg-slate-50/50 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition"
                     />
 
@@ -255,7 +255,7 @@
                                 type="button" 
                                 @click="searchQuery = ''" 
                                 class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
-                                title="Clear search"
+                                title="{{ __('Clear search') }}"
                             >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
@@ -265,13 +265,13 @@
                             type="button" 
                             @click="useMyLocation()" 
                             class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-700 transition flex items-center gap-1 border border-slate-200"
-                            :title="locating ? 'Detecting your GPS position...' : 'Use My Current Location'"
+                            :title="locating ? '{{ __('Detecting your GPS position...') }}' : '{{ __('Use My Current Location') }}'"
                         >
                             <svg class="w-3.5 h-3.5 text-brand-600" :class="{ 'animate-spin': locating }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
-                            <span class="hidden sm:inline" x-text="locating ? 'Locating...' : 'GPS'"></span>
+                            <span class="hidden sm:inline" x-text="locating ? '{{ __('Locating...') }}' : '{{ __('GPS') }}'"></span>
                         </button>
                     </div>
                 </div>
@@ -289,7 +289,7 @@
                             x-model="selectedLocation" 
                             class="w-full pl-9 pr-8 py-2.5 rounded-xl border border-slate-300 bg-slate-50/50 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition appearance-none cursor-pointer"
                         >
-                            <option value="all">All Locations</option>
+                            <option value="all">{{ __('All Locations') }}</option>
                             @foreach($locations as $loc)
                                 <option value="{{ strtolower($loc) }}">{{ $loc }}</option>
                             @endforeach
@@ -306,7 +306,7 @@
                             @click="resetFilters()" 
                             class="px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition whitespace-nowrap"
                         >
-                            Reset
+                            {{ __('Reset') }}
                         </button>
                     </template>
                 </div>
@@ -317,14 +317,14 @@
                 {{-- Quick Region Pills (Left) --}}
                 <div class="flex items-center gap-2 flex-wrap">
                     @if(count($locations) > 0)
-                        <span class="text-xs font-medium text-slate-400 mr-1">Quick Region:</span>
+                        <span class="text-xs font-medium text-slate-400 mr-1">{{ __('Quick Region:') }}</span>
                         <button 
                             type="button" 
                             @click="selectedLocation = 'all'"
                             :class="selectedLocation === 'all' ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
                             class="px-3 py-1 rounded-lg text-xs font-semibold transition"
                         >
-                            All Regions ({{ $totalCount }})
+                            {{ __('All Regions') }} ({{ $totalCount }})
                         </button>
                         @foreach($locations as $loc)
                             <button 
@@ -337,7 +337,7 @@
                             </button>
                         @endforeach
                     @else
-                        <span class="text-xs text-slate-400">Showing all licensed pharmacies</span>
+                        <span class="text-xs text-slate-400">{{ __('Showing all licensed pharmacies') }}</span>
                     @endif
                 </div>
 
@@ -347,7 +347,7 @@
                         <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                         </svg>
-                        <span>Distance Selector:</span>
+                        <span>{{ __('Distance Selector:') }}</span>
                     </label>
                     <div class="relative flex items-center">
                         <input 
@@ -359,7 +359,7 @@
                             x-model.number="distanceKm"
                             @input="if (distanceKm > 5) distanceKm = 5; if (distanceKm < 0.25 && distanceKm !== '' && distanceKm !== null) distanceKm = 0.25;"
                             class="w-24 pl-3 pr-8 py-1.5 rounded-lg border border-slate-300 bg-slate-50 text-xs font-bold font-mono text-slate-800 text-right focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition"
-                            title="Set search proximity radius (0.25 km to 5 km)"
+                            title="{{ __('Set search proximity radius (0.25 km to 5 km)') }}"
                             placeholder="0.5"
                         />
                         <span class="absolute right-2.5 text-[11px] font-semibold text-slate-400 pointer-events-none">km</span>
@@ -372,16 +372,16 @@
         {{-- Live Results Header --}}
         <div class="flex items-center justify-between mb-6">
             <div class="text-xs text-slate-500 font-medium">
-                Active certified subscriber pharmacies: 
+                {{ __('Active certified subscriber pharmacies:') }} 
                 <span class="font-bold text-slate-800" x-text="totalResults"></span>
-                <span class="text-slate-400" x-text="'(10 per page)'"></span>
+                <span class="text-slate-400">{{ __('(10 per page)') }}</span>
                 <template x-if="isProximityMode">
-                    <span class="ml-2 text-emerald-600 font-semibold">(Sorted by closest distance first)</span>
+                    <span class="ml-2 text-emerald-600 font-semibold">{{ __('(Sorted by closest distance first)') }}</span>
                 </template>
             </div>
             <div class="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                100% Cryptographically Verified
+                {{ __('100% Cryptographically Verified') }}
             </div>
         </div>
 
@@ -394,10 +394,10 @@
                     </svg>
                 </div>
                 <h3 class="text-base font-bold text-amber-900">
-                    Nothing is available within the selected area (<span x-text="distanceKm < 1 ? (distanceKm * 1000).toFixed(0) + ' m' : Number(distanceKm).toFixed(2) + ' km'"></span>)
+                    {{ __('Nothing is available within the selected area') }} (<span x-text="distanceKm < 1 ? (distanceKm * 1000).toFixed(0) + ' m' : Number(distanceKm).toFixed(2) + ' km'"></span>)
                 </h3>
                 <p class="text-xs text-amber-700 mt-1.5 max-w-lg mx-auto leading-relaxed">
-                    No registered pharmacies were found within your chosen radius. The closest pharmacies to your location outside this range are shown below:
+                    {{ __('No registered pharmacies were found within your chosen radius. The closest pharmacies to your location outside this range are shown below:') }}
                 </p>
                 <div class="mt-4 flex items-center justify-center gap-2">
                     <button 
@@ -405,7 +405,7 @@
                         @click="distanceKm = Math.min(5, Math.max(0.25, Math.ceil((closestFallbackPharmacies[0]?.distance || 0.5) * 4) / 4))" 
                         class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-xs transition"
                     >
-                        Expand radius to include closest (<span x-text="Math.min(5, Math.max(0.25, Math.ceil((closestFallbackPharmacies[0]?.distance || 0.5) * 4) / 4)) + ' km'"></span>)
+                        {{ __('Expand radius to include closest') }} (<span x-text="Math.min(5, Math.max(0.25, Math.ceil((closestFallbackPharmacies[0]?.distance || 0.5) * 4) / 4)) + ' km'"></span>)
                     </button>
                 </div>
             </div>
@@ -416,9 +416,9 @@
             <div class="mb-4 flex items-center justify-between">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                    Closest Available Pharmacies (Outside Selected Range)
+                    {{ __('Closest Available Pharmacies (Outside Selected Range)') }}
                 </h4>
-                <span class="text-xs text-slate-400">Nearest available branches</span>
+                <span class="text-xs text-slate-400">{{ __('Nearest available branches') }}</span>
             </div>
         </template>
 
@@ -437,7 +437,7 @@
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-bold text-slate-900 group-hover:text-brand-600 transition" x-text="pharmacy.name"></h3>
-                                    <span class="text-[11px] font-mono text-slate-400" x-text="'Reg: ' + pharmacy.trade_license"></span>
+                                    <span class="text-[11px] font-mono text-slate-400" x-text="'{{ __('Reg:') }} ' + pharmacy.trade_license"></span>
                                 </div>
                             </div>
                             
@@ -445,7 +445,7 @@
                             <div class="flex flex-col items-end gap-1.5 shrink-0">
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    Active
+                                    {{ __('Active') }}
                                 </span>
 
                                 {{-- Distance Pill (Visible in Proximity Mode) --}}
@@ -457,7 +457,7 @@
                                         <svg class="w-3 h-3 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                         <span x-text="pharmacy.distance < 1 ? (pharmacy.distance * 1000).toFixed(0) + ' m' : pharmacy.distance.toFixed(2) + ' km'"></span>
                                         <template x-if="index === 0 && currentPage === 1 && !hasNoRangeMatches">
-                                            <span class="text-[10px] font-semibold text-emerald-700 uppercase tracking-tight ml-0.5">Closest</span>
+                                            <span class="text-[10px] font-semibold text-emerald-700 uppercase tracking-tight ml-0.5">{{ __('Closest') }}</span>
                                         </template>
                                     </span>
                                 </template>
@@ -471,7 +471,7 @@
                                     <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    <span>Opening Hours</span>
+                                    <span>{{ __('Opening Hours') }}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-wrap">
                                     <template x-for="slot in pharmacy.opening_hours_slots" :key="slot">
@@ -512,7 +512,7 @@
                                 <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
-                                <span>1-Device Hardware Binding & Cloud Backup Active</span>
+                                <span>{{ __('1-Device Hardware Binding & Cloud Backup Active') }}</span>
                             </div>
                         </div>
                     </div>
@@ -524,7 +524,7 @@
                             class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-200/60 font-semibold text-xs flex items-center gap-1.5 transition"
                         >
                             <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                            Call
+                            {{ __('Call') }}
                         </a>
 
                         <a 
@@ -533,7 +533,7 @@
                             rel="noopener noreferrer" 
                             class="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs flex items-center gap-1.5 transition shadow-sm shadow-brand-600/20"
                         >
-                            <span>Open in Map</span>
+                            <span>{{ __('Open in Map') }}</span>
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                             </svg>
@@ -548,10 +548,10 @@
             <div class="mt-8 pt-5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                 {{-- Left: Results Count --}}
                 <div class="text-xs text-slate-500">
-                    Showing <span class="font-bold text-slate-800" x-text="totalResults === 0 ? 0 : ((currentPage - 1) * perPage + 1)"></span> to 
-                    <span class="font-bold text-slate-800" x-text="Math.min(currentPage * perPage, totalResults)"></span> of 
-                    <span class="font-bold text-slate-800" x-text="totalResults"></span> pharmacies
-                    <span class="text-slate-400 font-mono">(Page <span x-text="currentPage"></span> of <span x-text="totalPages"></span>)</span>
+                    {{ __('Showing') }} <span class="font-bold text-slate-800" x-text="totalResults === 0 ? 0 : ((currentPage - 1) * perPage + 1)"></span> {{ __('to') }} 
+                    <span class="font-bold text-slate-800" x-text="Math.min(currentPage * perPage, totalResults)"></span> {{ __('of') }} 
+                    <span class="font-bold text-slate-800" x-text="totalResults"></span> {{ __('pharmacies') }}
+                    <span class="text-slate-400 font-mono">({{ __('Page') }} <span x-text="currentPage"></span> / <span x-text="totalPages"></span>)</span>
                 </div>
 
                 {{-- Right: Pagination Buttons --}}
@@ -566,7 +566,7 @@
                             class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold transition flex items-center gap-1 shadow-2xs"
                         >
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-                            Previous
+                            {{ __('Previous') }}
                         </button>
 
                         {{-- Page Numbers --}}
@@ -595,7 +595,7 @@
                             :class="currentPage === totalPages ? 'opacity-40 cursor-not-allowed text-slate-400 bg-slate-50' : 'text-slate-700 bg-white hover:bg-slate-100 hover:border-brand-500'"
                             class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold transition flex items-center gap-1 shadow-2xs"
                         >
-                            Next
+                            {{ __('Next') }}
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                         </button>
                     </nav>
@@ -611,10 +611,10 @@
                     <p>{{ $pharmacy->pharmacy_address }}</p>
                     <p>{{ $pharmacy->pharmacy_phone }}</p>
                     @if($pharmacy->opening_hours)
-                        <p>Opening Hours: {{ $pharmacy->opening_hours }}</p>
+                        <p>{{ __('Opening Hours') }}: {{ $pharmacy->opening_hours }}</p>
                     @endif
-                    <a href="{{ $pharmacy->map_location_url ?: 'https://www.google.com/maps/search/?api=1&query=' . urlencode($pharmacy->pharmacy_name . ' ' . $pharmacy->pharmacy_address) }}" target="_blank">Open in Map</a>
-                    <span>Active</span>
+                    <a href="{{ $pharmacy->map_location_url ?: 'https://www.google.com/maps/search/?api=1&query=' . urlencode($pharmacy->pharmacy_name . ' ' . $pharmacy->pharmacy_address) }}" target="_blank">{{ __('Open in Map') }}</a>
+                    <span>{{ __('Active') }}</span>
                 </div>
             @endforeach
         </div>
@@ -627,16 +627,16 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-bold text-slate-800">No matching pharmacies found</h3>
+                <h3 class="text-lg font-bold text-slate-800">{{ __('No matching pharmacies found') }}</h3>
                 <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">
-                    Try adjusting your search terms, changing the region filter, or resetting your search filters.
+                    {{ __('Try adjusting your search terms, changing the region filter, or resetting your search filters.') }}
                 </p>
                 <button 
                     type="button"
                     @click="resetFilters()" 
                     class="mt-4 inline-block px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold shadow-sm transition"
                 >
-                    Reset All Filters
+                    {{ __('Reset All Filters') }}
                 </button>
             </div>
         </template>

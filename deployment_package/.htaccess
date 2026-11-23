@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Prevent loop if already accessing public
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Security: Block direct HTTP access to sensitive project files
+<FilesMatch "^\.env|composer\.(json|lock)|package(-lock)?\.json|artisan|database_dump\.sql|README.*|.*\.log">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Disable Directory Browsing
+Options -Indexes

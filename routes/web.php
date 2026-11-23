@@ -5,6 +5,14 @@ use App\Http\Controllers\PharmacyDirectoryController;
 use App\Http\Controllers\PharmacyRegistrationController;
 use Illuminate\Support\Facades\Route;
 
+// Language switch route
+Route::get('/lang/{locale}', function (string $locale) {
+    if (in_array($locale, ['en', 'bn'], true)) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+})->name('lang.switch');
+
 // Active subscriber pharmacies directory (Default Home Page)
 Route::get('/', [PharmacyDirectoryController::class, 'index'])->name('pharmacy.directory');
 Route::get('/pharmacies', [PharmacyDirectoryController::class, 'index']); // Alias support
